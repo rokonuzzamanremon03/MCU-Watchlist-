@@ -3,26 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আল্টিমেট মার্ভেল ওয়াচ অর্ডার</title>
+    <title>দ্য আল্টিমেট মার্ভেল ট্র্যাকার - জাস্ট-ইন-টাইম অর্ডার</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .checked-item { text-decoration: line-through; color: #64748b; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0b0f19; color: #e2e8f0; }
+        .checked-item .title-text { text-decoration: line-through; color: #475569; }
+        .checked-item .note-text { color: #334155; }
+        .universe-badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 8px; }
+        .mcu { background-color: #dc2626; color: white; }
+        .sony { background-color: #2563eb; color: white; }
+        .fox { background-color: #d97706; color: white; }
+        .netflix { background-color: #9333ea; color: white; }
+        .future { background-color: #059669; color: white; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <div class="max-w-4xl mx-auto bg-slate-800 p-6 md:p-10 rounded-xl shadow-2xl">
-        <h1 class="text-3xl md:text-4xl font-bold text-center text-red-500 mb-2">আল্টিমেট মার্ভেল মাল্টিভার্স চেকলিস্ট</h1>
-        <p class="text-center text-slate-400 mb-8">প্রতিটি ক্যারেক্টারের অরিজিন থেকে শুরু করে ২০২৬-এর অ্যাভেঞ্জার্স পর্যন্ত জিরো কনফিউশন গাইড!</p>
+    <div class="max-w-5xl mx-auto bg-slate-900 p-6 md:p-10 rounded-2xl border border-slate-700 shadow-2xl">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-blue-500 mb-4 uppercase tracking-wider">মার্ভেল মাল্টিভার্স মাস্টার চেকলিস্ট</h1>
+            <p class="text-slate-400 text-lg">ক্যারেক্টার অরিজিন -> ক্রসওভার। কোনোকিছু ভোলার চান্স জিরো!</p>
+        </div>
 
-        <div class="mb-8">
-            <div class="flex justify-between mb-1">
-                <span class="text-sm font-medium text-slate-300">আপনার প্রোগ্রেস</span>
-                <span class="text-sm font-medium text-slate-300" id="progress-text">0%</span>
+        <div class="mb-10 bg-slate-800 p-5 rounded-xl border border-slate-600">
+            <div class="flex justify-between mb-2">
+                <span class="text-sm font-bold text-slate-300 uppercase tracking-widest">মিশন প্রোগ্রেস</span>
+                <span class="text-sm font-bold text-red-400" id="progress-text">0% কমপ্লিট</span>
             </div>
-            <div class="w-full bg-slate-700 rounded-full h-4">
-                <div class="bg-red-500 h-4 rounded-full transition-all duration-500" id="progress-bar" style="width: 0%"></div>
+            <div class="w-full bg-slate-950 rounded-full h-5 border border-slate-700 p-0.5">
+                <div class="bg-gradient-to-r from-red-600 to-blue-600 h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(220,38,38,0.5)]" id="progress-bar" style="width: 0%"></div>
             </div>
         </div>
 
@@ -31,83 +40,99 @@
     </div>
 
     <script>
-        // The Ultimate Step-by-Step Data
         const marvelData = [
             {
-                phase: "ধাপ ১: এমসিইউ-এর বাইরের জগত (লিগ্যাসি ও মাল্টিভার্স অরিজিন)",
-                description: "এই মুভিগুলো এমসিইউ-এর অংশ না হলেও, এখানকার চরিত্রগুলো মাল্টিভার্সের মাধ্যমে এমসিইউ-তে আসবে। তাই এগুলো আগে দেখে নিলে পরে কনফিউশন হবে না।",
+                phase: "অধ্যায় ১: এমসিইউর শুরু এবং অ্যাভেঞ্জার্স গঠন",
+                description: "এখান থেকেই সব শুরু। এই ফেইজে মূল ৬ জন অ্যাভেঞ্জার কীভাবে তৈরি হলো এবং তারা কীভাবে এক হলো সেটা দেখবেন।",
                 movies: [
-                    { id: "xmen2000", title: "X-Men (2000)", note: "প্রফেসর এক্স এবং উলভারিনের অরিজিন।" },
-                    { id: "sm2002", title: "Spider-Man (2002)", note: "টোবি ম্যাগুয়্যার এবং গ্রিন গবলিনের অরিজিন।" },
-                    { id: "hulk2003", title: "Hulk (2003)", note: "ব্রুস ব্যানারের হাল্ক হওয়ার একদম প্রথম বিস্তারিত গল্প।" },
-                    { id: "sm2", title: "Spider-Man 2 (2004)", note: "ডক্টর অক্টোপাসের অরিজিন।" },
-                    { id: "sm3", title: "Spider-Man 3 (2007)", note: "টোবির স্পাইডার-ম্যানের সমাপ্তি ও ভেনমের সাথে ফাইট।" },
-                    { id: "xmenfc", title: "X-Men: First Class (2011)", note: "এক্স-মেন টিমের একদম শুরুর গল্প।" },
-                    { id: "asm1", title: "The Amazing Spider-Man (2012)", note: "অ্যান্ড্রু গারফিল্ড এবং লিজার্ডের অরিজিন।" },
-                    { id: "asm2", title: "The Amazing Spider-Man 2 (2014)", note: "ইলেকট্রোর অরিজিন।" },
-                    { id: "dd_s1", title: "Daredevil - Season 1 (2015)", note: "ম্যাট মারডক কীভাবে ডেডডেভিল হলো (নেটফ্লিক্স)।" },
-                    { id: "dp1", title: "Deadpool (2016)", note: "ডেডপুলের অরিজিন।" },
-                    { id: "logan", title: "Logan (2017)", note: "উলভারিনের শ্রেষ্ঠ ও ইমোশনাল মুভি।" },
-                    { id: "venom1", title: "Venom (2018)", note: "টম হার্ডির ভেনম অরিজিন।" }
+                    { id: "ca_first", title: "Captain America: The First Avenger (2011)", uni: "mcu", note: "সাল ১৯৪৩। স্টিভ রজার্স কীভাবে সুপার সোলজার হলো এবং টেসার‍্যাক্ট (স্পেস স্টোন)-এর প্রথম আবির্ভাব।" },
+                    { id: "cap_marvel", title: "Captain Marvel (2019)", uni: "mcu", note: "সাল ১৯৯৫। ক্যারল ড্যানভার্সের অরিজিন এবং নিক ফিউরি কীভাবে 'অ্যাভেঞ্জার্স' নামটা পেল।" },
+                    { id: "im1", title: "Iron Man (2008)", uni: "mcu", note: "টনি স্টার্কের আয়রন ম্যান হওয়ার যুগান্তকারী গল্প।" },
+                    { id: "im2", title: "Iron Man 2 (2010)", uni: "mcu", note: "ওয়ার মেশিনের জন্ম এবং ব্ল্যাক উইডোর (নাতাশা) এমসিইউ-তে গ্র্যান্ড এন্ট্রি।" },
+                    { id: "hulk_mcu", title: "The Incredible Hulk (2008)", uni: "mcu", note: "ব্রুস ব্যানারের এমসিইউ অরিজিন (পরে শুধু অভিনেতা চেঞ্জ হয়ে মার্ক রাফালো হবে)।" },
+                    { id: "thor1", title: "Thor (2011)", uni: "mcu", note: "থর ও লোকির পরিচয়, আসগার্ডের গল্প। এখানেই হকআই-কে প্রথমবার একটুখানি দেখা যায়।" },
+                    { id: "avengers1", title: "The Avengers (2012)", uni: "mcu", note: "পৃথিবীকে বাঁচাতে প্রথমবার ৬ জন হিরোর একসাথে হওয়া এবং থ্যানোসের প্রথম ঝলক।" }
                 ]
             },
             {
-                phase: "ধাপ ২: এমসিইউ অরিজিন - অ্যাভেঞ্জার্স গঠন",
-                description: "এখান থেকে মূল মার্ভেল সিনেমাটিক ইউনিভার্স শুরু। সব ক্যারেক্টারের জন্ম এবং প্রথমবার একসাথে হওয়া।",
+                phase: "অধ্যায় ২: নতুন হিরোদের জন্ম ও ইনফিনিটি স্টোনের খোঁজ",
+                description: "এই ধাপে ইউনিভার্স বড় হবে। নতুন পাওয়ারফুল ক্যারেক্টাররা আসবে যারা পরে অনেক বড় ভূমিকা রাখবে।",
                 movies: [
-                    { id: "ca_first", title: "Captain America: The First Avenger (2011)", note: "ক্যাপ্টেন আমেরিকার জন্ম (১৯৪৩ সাল)।" },
-                    { id: "cap_marvel", title: "Captain Marvel (2019)", note: "ক্যাপ্টেন মার্ভেলের অরিজিন (১৯৯৫ সাল)।" },
-                    { id: "im1", title: "Iron Man (2008)", note: "আয়রন ম্যানের শুরু।" },
-                    { id: "im2", title: "Iron Man 2 (2010)", note: "ব্ল্যাক উইডোর প্রথম এন্ট্রি।" },
-                    { id: "hulk_mcu", title: "The Incredible Hulk (2008)", note: "এমসিইউ-এর হাল্ক।" },
-                    { id: "thor1", title: "Thor (2011)", note: "থর ও লোকির শুরু, হকআই-এর প্রথম দেখা।" },
-                    { id: "avengers1", title: "The Avengers (2012)", note: "সবার প্রথম টিম-আপ।" }
+                    { id: "thor2", title: "Thor: The Dark World (2013)", uni: "mcu", note: "রিয়েলিটি স্টোনের কাহিনি।" },
+                    { id: "im3", title: "Iron Man 3 (2013)", uni: "mcu", note: "অ্যাভেঞ্জার্সের ঘটনার পর টনি স্টার্কের ট্রমা এবং নতুন স্যুট।" },
+                    { id: "ca_ws", title: "Captain America: The Winter Soldier (2014)", uni: "mcu", note: "ফ্যালকনের শুরু, শিল্ড (SHIELD)-এর পতন এবং উইন্টার সোলজারের ফিরে আসা।" },
+                    { id: "gotg1", title: "Guardians of the Galaxy (2014)", uni: "mcu", note: "স্টার-লর্ড, গ্রুট, রকেট, গামোরাদের অরিজিন। পাওয়ার স্টোনের খোঁজ।" },
+                    { id: "gotg2", title: "Guardians of the Galaxy Vol. 2 (2017)", uni: "mcu", note: "স্টার-লর্ডের বাবার পরিচয় এবং ম্যান্টিসের এন্ট্রি।" },
+                    { id: "a_aou", title: "Avengers: Age of Ultron (2015)", uni: "mcu", note: "মাইন্ড স্টোন থেকে ভিশন এবং স্কারলেট উইচ (ওয়ান্ডা)-এর জন্ম।" },
+                    { id: "antman1", title: "Ant-Man (2015)", uni: "mcu", note: "স্কট ল্যাং কীভাবে চোর থেকে অ্যান্ট-ম্যান হলো।" }
                 ]
             },
             {
-                phase: "ধাপ ৩: ইউনিভার্স সম্প্রসারণ এবং নতুন হিরো",
-                description: "অ্যাভেঞ্জার্সদের পরের ধাপ এবং নতুন কিছু শক্তিশালী ক্যারেক্টারের জন্ম।",
+                phase: "অধ্যায় ৩: বিভাজন থেকে মহাযুদ্ধ (সিভিল ওয়ার টু এন্ডগেম)",
+                description: "অ্যাভেঞ্জার্সরা নিজেদের মধ্যে লড়বে, নতুন প্রজন্ম আসবে এবং থ্যানোসের সাথে ফাইনাল যুদ্ধ হবে।",
                 movies: [
-                    { id: "thor2", title: "Thor: The Dark World (2013)", note: "রিয়েলিটি স্টোনের কাহিনি।" },
-                    { id: "im3", title: "Iron Man 3 (2013)", note: "আয়রন ম্যানের মানসিক যুদ্ধ।" },
-                    { id: "ca_ws", title: "Captain America: The Winter Soldier (2014)", note: "ফ্যালকনের শুরু ও উইন্টার সোলজারের গল্প।" },
-                    { id: "gotg1", title: "Guardians of the Galaxy (2014)", note: "স্টার-লর্ড, গ্রুট, রকেটদের অরিজিন।" },
-                    { id: "gotg2", title: "Guardians of the Galaxy Vol. 2 (2017)", note: "গার্ডিয়ান্সদের পরের গল্প।" },
-                    { id: "a_aou", title: "Avengers: Age of Ultron (2015)", note: "ভিশন এবং স্কারলেট উইচ (ওয়ান্ডা)-এর অরিজিন।" },
-                    { id: "antman1", title: "Ant-Man (2015)", note: "অ্যান্ট-ম্যানের অরিজিন।" }
+                    { id: "ca_cw", title: "Captain America: Civil War (2016)", uni: "mcu", note: "হিরোদের মধ্যে মারামারি। ব্ল্যাক প্যান্থার এবং টম হল্যান্ডের স্পাইডার-ম্যানের এমসিইউ-তে এন্ট্রি।" },
+                    { id: "bw", title: "Black Widow (2021)", uni: "mcu", note: "সিভিল ওয়ারের পর ব্ল্যাক উইডোর পালিয়ে থাকার গল্প এবং ইয়েলেনার এন্ট্রি।" },
+                    { id: "bp1", title: "Black Panther (2018)", uni: "mcu", note: "ওয়াকান্ডার রাজা হিসেবে ব্ল্যাক প্যান্থারের দায়িত্ব গ্রহণ।" },
+                    { id: "sm_hc", title: "Spider-Man: Homecoming (2017)", uni: "mcu", note: "টম হল্যান্ডের স্পাইডার-ম্যানের প্রথম সলো মিশন ও আয়রন ম্যানের সাথে সম্পর্ক।" },
+                    { id: "drstrange1", title: "Doctor Strange (2016)", uni: "mcu", note: "স্টিভেন স্ট্র্যাঞ্জের জাদুকর হওয়ার গল্প এবং টাইম স্টোনের পরিচয়।" },
+                    { id: "thor3", title: "Thor: Ragnarok (2017)", uni: "mcu", note: "থরের নতুন শক্তি, হাল্কের গ্ল্যাডিয়েটর রূপ এবং আসগার্ডের পতন।" },
+                    { id: "am_wasp", title: "Ant-Man and the Wasp (2018)", uni: "mcu", note: "কোয়ান্টাম রিয়েলমের ডিটেইলস (যা এন্ডগেমে খুব কাজে লাগবে)।" },
+                    { id: "avengers_iw", title: "Avengers: Infinity War (2018)", uni: "mcu", note: "থ্যানোসের সব পাথর খোঁজার মিশন এবং হিরোদের সবচেয়ে বড় হার।" },
+                    { id: "avengers_eg", title: "Avengers: Endgame (2019)", uni: "mcu", note: "টাইম ট্রাভেল, চূড়ান্ত লড়াই এবং আয়রন ম্যান ও ক্যাপের গল্পের সমাপ্তি।" }
                 ]
             },
             {
-                phase: "ধাপ ৪: সিভিল ওয়ার এবং নতুন প্রজন্মের অরিজিন",
-                description: "এই ধাপে অনেক নতুন ক্যারেক্টার আসবে এবং তারা কীভাবে এমসিইউ-তে যোগ দিল তা ক্লিয়ার হবে।",
+                phase: "অধ্যায় ৪: মাল্টিভার্সের দরজা খোলা",
+                description: "এন্ডগেমের পর সবকিছু স্বাভাবিক মনে হলেও, জাদুর কারণে অন্য ইউনিভার্সগুলো এমসিইউ-এর সাথে কানেক্ট হওয়া শুরু করবে।",
                 movies: [
-                    { id: "ca_cw", title: "Captain America: Civil War (2016)", note: "ব্ল্যাক প্যান্থার এবং টম হল্যান্ডের স্পাইডার-ম্যানের প্রথম দেখা।" },
-                    { id: "bw", title: "Black Widow (2021)", note: "ব্ল্যাক উইডোর সিক্রেট অতীত।" },
-                    { id: "bp1", title: "Black Panther (2018)", note: "ব্ল্যাক প্যান্থার এবং ওয়াকান্ডার বিস্তারিত।" },
-                    { id: "sm_hc", title: "Spider-Man: Homecoming (2017)", note: "টম হল্যান্ডের প্রথম সলো মুভি।" },
-                    { id: "drstrange1", title: "Doctor Strange (2016)", note: "ডক্টর স্ট্র্যাঞ্জের জাদুকর হওয়ার গল্প।" },
-                    { id: "thor3", title: "Thor: Ragnarok (2017)", note: "থরের নতুন রূপ।" },
-                    { id: "am_wasp", title: "Ant-Man and the Wasp (2018)", note: "কোয়ান্টাম রিয়েলমের শুরু।" }
+                    { id: "loki_s1", title: "Loki - Season 1 (2021)", uni: "mcu", note: "টাইমলাইন কী, মাল্টিভার্স কীভাবে কাজ করে এবং ক্যাং-এর প্রথম হিন্ট।" },
+                    { id: "wandavision", title: "WandaVision (2021)", uni: "mcu", note: "ওয়ান্ডা কীভাবে তার ক্ষমতার চূড়ান্ত সীমায় গিয়ে 'স্কারলেট উইচ' হয়ে ওঠে।" },
+                    { id: "sm_ffh", title: "Spider-Man: Far From Home (2019)", uni: "mcu", note: "এন্ডগেমের পর পিটারের মানসিক অবস্থা এবং মিস্টেরিও দ্বারা আইডেন্টিটি ফাঁস।" }
                 ]
             },
             {
-                phase: "ধাপ ৫: ইনফিনিটি ওয়ার এবং সমাপ্তি",
-                description: "সব হিরো একসাথে থ্যানোসের বিরুদ্ধে।",
+                phase: "অধ্যায় ৫: 'নো ওয়ে হোম'-এর প্রস্তুতি (সনি ও নেটফ্লিক্স অরিজিন)",
+                description: "টম হল্যান্ডের 'নো ওয়ে হোম' দেখার আগে এই লিগ্যাসি মুভিগুলো দেখুন। তাহলে এরা যখন এমসিইউ-তে ঢুকবে, তখন আপনার স্টোরি মনে থাকবে।",
                 movies: [
-                    { id: "avengers_iw", title: "Avengers: Infinity War (2018)", note: "থ্যানোসের অ্যাটাক।" },
-                    { id: "avengers_eg", title: "Avengers: Endgame (2019)", note: "অ্যাভেঞ্জার্সদের চূড়ান্ত ফাইট।" }
+                    { id: "sm2002", title: "Spider-Man 1, 2, 3 (2002-2007)", uni: "sony", note: "টোবি ম্যাগুয়্যার, গ্রিন গবলিন, ডক অকের অরিজিন এবং স্টোরি।" },
+                    { id: "asm1_2", title: "The Amazing Spider-Man 1 & 2 (2012-2014)", uni: "sony", note: "অ্যান্ড্রু গারফিল্ড, লিজার্ড এবং ইলেকট্রোর স্টোরি।" },
+                    { id: "venom1_2", title: "Venom & Venom: Let There Be Carnage (2018-2021)", uni: "sony", note: "টম হার্ডির ভেনম কীভাবে তৈরি হলো এবং তার ইউনিভার্সের গল্প।" },
+                    { id: "dd_s1", title: "Daredevil - Season 1 to 3 (2015-2018)", uni: "netflix", note: "ম্যাট মারডক কীভাবে অন্ধ উকিল থেকে ডেডডেভিল হলো এবং কিংপিনের সাথে লড়াই।" }
                 ]
             },
             {
-                phase: "ধাপ ৬: মাল্টিভার্স সাগা (২০২৬-এর প্রস্তুতি)",
-                description: "এখান থেকেই মাল্টিভার্স ওপেন হবে এবং ধাপ ১-এর ক্যারেক্টাররা এখানে আসা শুরু করবে।",
+                phase: "অধ্যায় ৬: দ্য স্পাইডার-ভার্স ব্রেকিং",
+                description: "আগের অধ্যায়ের সবাই এখন এই মুভিতে এসে হাজির হবে। আপনার স্টোরি এখন একদম ফ্রেশ, তাই মজা পাবেন ১০০ গুণ!",
                 movies: [
-                    { id: "loki_s1", title: "Loki - Season 1 (2021)", note: "মাল্টিভার্স কীভাবে কাজ করে তার রুলস।" },
-                    { id: "wandavision", title: "WandaVision (2021)", note: "স্কারলেট উইচের নতুন রূপ।" },
-                    { id: "sm_ffh", title: "Spider-Man: Far From Home (2019)", note: "এন্ডগেমের পর স্পাইডার-ম্যানের অবস্থা।" },
-                    { id: "sm_nwh", title: "Spider-Man: No Way Home (2021)", note: "সব স্পাইডার-ম্যান, ভিলেন এবং ডেডডেভিলের ক্রসওভার!" },
-                    { id: "ds_mom", title: "Doctor Strange in the Multiverse of Madness (2022)", note: "মাল্টিভার্সের গভীরে যাত্রা (এক্স-মেন রেফারেন্স)।" },
-                    { id: "dp_w", title: "Deadpool & Wolverine (2024)", note: "ফক্স ইউনিভার্সের এমসিইউ-তে এন্ট্রি!" }
+                    { id: "sm_nwh", title: "Spider-Man: No Way Home (2021)", uni: "mcu", note: "ডক্টর স্ট্র্যাঞ্জের ভুলে মাল্টিভার্স ভেঙে টোবি, অ্যান্ড্রু, ডক অক, গবলিন, ভেনম এবং উকিল হিসেবে ম্যাট মারডকের (ডেডডেভিল) এমসিইউ-তে এন্ট্রি!" }
+                ]
+            },
+            {
+                phase: "অধ্যায় ৭: 'ডেডপুল ও উলভারিন'-এর প্রস্তুতি (ফক্স অরিজিন)",
+                description: "মাল্টিভার্স অফ ম্যাডনেস এবং নতুন ডেডপুল মুভি বোঝার জন্য এক্স-মেন ইউনিভার্সের এই মুভিগুলো একদম টাটকা মাথায় রাখুন।",
+                movies: [
+                    { id: "xmen_core", title: "X-Men (2000) & X2 (2003)", uni: "fox", note: "প্রফেসর এক্স, ম্যাগনেটো এবং উলভারিনের অরিজিন ও মিউট্যান্টদের দুনিয়া।" },
+                    { id: "xmenfc", title: "X-Men: First Class (2011)", uni: "fox", note: "এক্স-মেনরা একদম শুরুতে কীভাবে এক হয়েছিল।" },
+                    { id: "dp1_2", title: "Deadpool 1 & 2 (2016-2018)", uni: "fox", note: "ওয়েড উইলসন কীভাবে ডেডপুল হলো এবং তার টাইম ট্রাভেল মেশিন।" },
+                    { id: "logan", title: "Logan (2017)", uni: "fox", note: "উলভারিনের জীবনের সবচেয়ে ইমোশনাল এবং শেষ গল্প।" }
+                ]
+            },
+            {
+                phase: "অধ্যায় ৮: মাল্টিভার্সের গভীরতা ও মিউট্যান্টদের এমসিইউ-তে এন্ট্রি",
+                description: "আগের অধ্যায়ের ক্যারেক্টাররা এবার সরাসরি এমসিইউ-এর টাইমলাইনে ঢুকে পড়বে।",
+                movies: [
+                    { id: "ds_mom", title: "Doctor Strange in the Multiverse of Madness (2022)", uni: "mcu", note: "মাল্টিভার্সে ট্রাভেল, স্কারলেট উইচের ধ্বংসলীলা এবং প্রফেসর এক্স-এর ক্যামিও।" },
+                    { id: "dp_w", title: "Deadpool & Wolverine (2024)", uni: "mcu", note: "ফক্স ইউনিভার্স ধ্বংসের হাত থেকে বাঁচাতে ডেডপুল আর উলভারিনের এমসিইউ টাইমলাইনে গ্র্যান্ড এন্ট্রি!" }
+                ]
+            },
+            {
+                phase: "অধ্যায় ৯: ভবিষ্যৎ এবং সিক্রেট ওয়ার্সের প্রস্তুতি (২০২৫ - ২০২৭)",
+                description: "এই মুভিগুলোর জন্য আপনাকে প্রস্তুত থাকতে হবে। এখানকার চরিত্রগুলোই পুরো মাল্টিভার্সকে এক করবে।",
+                movies: [
+                    { id: "ff_first", title: "The Fantastic Four: First Steps (2025)", uni: "future", note: "মি. ফ্যান্টাস্টিকদের অরিজিন, যারা অন্য একটি ইউনিভার্সে থাকে।" },
+                    { id: "avengers_doom", title: "Avengers: Doomsday (2026)", uni: "future", note: "রবার্ট ডাউনি জুনিয়রের ডক্টর ডুম হিসেবে এন্ট্রি এবং নতুন ভিলেনের উত্থান।" },
+                    { id: "avengers_sw", title: "Avengers: Secret Wars (2027)", uni: "future", note: "সব ইউনিভার্স (সনি, ফক্স, এমসিইউ) ভেঙে এক হয়ে সবচেয়ে বড় মহাযুদ্ধ!" }
                 ]
             }
         ];
@@ -115,8 +140,17 @@
         const container = document.getElementById('movie-list');
         let totalMovies = 0;
 
-        // Initialize state from LocalStorage
-        let savedState = JSON.parse(localStorage.getItem('marvelProgress')) || {};
+        // Load progress from localStorage
+        let savedState = JSON.parse(localStorage.getItem('marvelUltimateTracker')) || {};
+
+        function getUniverseBadge(uni) {
+            if(uni === 'mcu') return '<span class="universe-badge mcu">MCU</span>';
+            if(uni === 'sony') return '<span class="universe-badge sony">SONY</span>';
+            if(uni === 'fox') return '<span class="universe-badge fox">FOX</span>';
+            if(uni === 'netflix') return '<span class="universe-badge netflix">NETFLIX</span>';
+            if(uni === 'future') return '<span class="universe-badge future">UPCOMING</span>';
+            return '';
+        }
 
         function updateProgress() {
             const checkedCount = Object.values(savedState).filter(v => v === true).length;
@@ -128,30 +162,33 @@
 
         function toggleCheckbox(id) {
             savedState[id] = !savedState[id];
-            localStorage.setItem('marvelProgress', JSON.stringify(savedState));
+            localStorage.setItem('marvelUltimateTracker', JSON.stringify(savedState));
             
-            const label = document.getElementById(`label-${id}`);
-            const note = document.getElementById(`note-${id}`);
+            const labelContainer = document.getElementById(`container-${id}`);
             
             if(savedState[id]) {
-                label.classList.add('checked-item');
-                note.classList.add('checked-item');
+                labelContainer.classList.add('checked-item');
+                labelContainer.classList.add('bg-slate-800');
+                labelContainer.classList.remove('bg-slate-800/40');
             } else {
-                label.classList.remove('checked-item');
-                note.classList.remove('checked-item');
+                labelContainer.classList.remove('checked-item');
+                labelContainer.classList.remove('bg-slate-800');
+                labelContainer.classList.add('bg-slate-800/40');
             }
             updateProgress();
         }
 
-        // Render the list
+        // Generate HTML from Data
         marvelData.forEach((section, index) => {
             const sectionDiv = document.createElement('div');
-            sectionDiv.className = "mb-10 bg-slate-700/50 p-5 rounded-lg border border-slate-600";
+            sectionDiv.className = "mb-12";
             
             sectionDiv.innerHTML = `
-                <h2 class="text-2xl font-bold text-blue-400 mb-2">${section.phase}</h2>
-                <p class="text-slate-300 text-sm mb-4 pb-4 border-b border-slate-600">${section.description}</p>
-                <div class="space-y-3" id="section-${index}"></div>
+                <div class="border-l-4 border-red-500 pl-4 mb-5">
+                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">${section.phase}</h2>
+                    <p class="text-slate-400 text-sm md:text-base">${section.description}</p>
+                </div>
+                <div class="space-y-4" id="section-${index}"></div>
             `;
             container.appendChild(sectionDiv);
 
@@ -160,16 +197,21 @@
             section.movies.forEach(movie => {
                 totalMovies++;
                 const isChecked = savedState[movie.id] || false;
-                const textClass = isChecked ? 'checked-item' : '';
+                const bgClass = isChecked ? 'bg-slate-800 checked-item' : 'bg-slate-800/40';
                 
                 const movieHtml = `
-                    <label class="flex items-start space-x-3 p-3 hover:bg-slate-700 rounded-lg cursor-pointer transition-colors">
-                        <input type="checkbox" id="${movie.id}" ${isChecked ? 'checked' : ''} 
-                               class="w-5 h-5 text-red-500 bg-slate-900 border-slate-600 rounded focus:ring-red-500 focus:ring-2 mt-1"
-                               onclick="toggleCheckbox('${movie.id}')">
+                    <label id="container-${movie.id}" class="flex items-start space-x-4 p-4 rounded-xl cursor-pointer transition-all duration-300 hover:bg-slate-700 hover:shadow-lg border border-slate-700/50 ${bgClass}">
+                        <div class="pt-1">
+                            <input type="checkbox" id="${movie.id}" ${isChecked ? 'checked' : ''} 
+                                   class="w-6 h-6 text-blue-500 bg-slate-900 border-slate-600 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
+                                   onclick="toggleCheckbox('${movie.id}')">
+                        </div>
                         <div class="flex-1">
-                            <span id="label-${movie.id}" class="font-semibold text-lg ${textClass}">${movie.title}</span>
-                            <p id="note-${movie.id}" class="text-sm text-slate-400 ${textClass}">${movie.note}</p>
+                            <div class="flex items-center flex-wrap gap-2 mb-1">
+                                <span class="title-text font-bold text-lg md:text-xl text-slate-100">${movie.title}</span>
+                                ${getUniverseBadge(movie.uni)}
+                            </div>
+                            <p class="note-text text-sm md:text-base text-slate-400 leading-relaxed">${movie.note}</p>
                         </div>
                     </label>
                 `;
@@ -177,7 +219,7 @@
             });
         });
 
-        // Initial Progress Call
+        // First render update
         updateProgress();
     </script>
 </body>
