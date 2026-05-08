@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আল্টিমেট মার্ভেল ওয়াচ অর্ডার</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .checked-item { text-decoration: line-through; color: #64748b; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto bg-slate-800 p-6 md:p-10 rounded-xl shadow-2xl">
+        <h1 class="text-3xl md:text-4xl font-bold text-center text-red-500 mb-2">আল্টিমেট মার্ভেল মাল্টিভার্স চেকলিস্ট</h1>
+        <p class="text-center text-slate-400 mb-8">প্রতিটি ক্যারেক্টারের অরিজিন থেকে শুরু করে ২০২৬-এর অ্যাভেঞ্জার্স পর্যন্ত জিরো কনফিউশন গাইড!</p>
+
+        <div class="mb-8">
+            <div class="flex justify-between mb-1">
+                <span class="text-sm font-medium text-slate-300">আপনার প্রোগ্রেস</span>
+                <span class="text-sm font-medium text-slate-300" id="progress-text">0%</span>
+            </div>
+            <div class="w-full bg-slate-700 rounded-full h-4">
+                <div class="bg-red-500 h-4 rounded-full transition-all duration-500" id="progress-bar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div id="movie-list">
+            </div>
+    </div>
+
+    <script>
+        // The Ultimate Step-by-Step Data
+        const marvelData = [
+            {
+                phase: "ধাপ ১: এমসিইউ-এর বাইরের জগত (লিগ্যাসি ও মাল্টিভার্স অরিজিন)",
+                description: "এই মুভিগুলো এমসিইউ-এর অংশ না হলেও, এখানকার চরিত্রগুলো মাল্টিভার্সের মাধ্যমে এমসিইউ-তে আসবে। তাই এগুলো আগে দেখে নিলে পরে কনফিউশন হবে না।",
+                movies: [
+                    { id: "xmen2000", title: "X-Men (2000)", note: "প্রফেসর এক্স এবং উলভারিনের অরিজিন।" },
+                    { id: "sm2002", title: "Spider-Man (2002)", note: "টোবি ম্যাগুয়্যার এবং গ্রিন গবলিনের অরিজিন।" },
+                    { id: "hulk2003", title: "Hulk (2003)", note: "ব্রুস ব্যানারের হাল্ক হওয়ার একদম প্রথম বিস্তারিত গল্প।" },
+                    { id: "sm2", title: "Spider-Man 2 (2004)", note: "ডক্টর অক্টোপাসের অরিজিন।" },
+                    { id: "sm3", title: "Spider-Man 3 (2007)", note: "টোবির স্পাইডার-ম্যানের সমাপ্তি ও ভেনমের সাথে ফাইট।" },
+                    { id: "xmenfc", title: "X-Men: First Class (2011)", note: "এক্স-মেন টিমের একদম শুরুর গল্প।" },
+                    { id: "asm1", title: "The Amazing Spider-Man (2012)", note: "অ্যান্ড্রু গারফিল্ড এবং লিজার্ডের অরিজিন।" },
+                    { id: "asm2", title: "The Amazing Spider-Man 2 (2014)", note: "ইলেকট্রোর অরিজিন।" },
+                    { id: "dd_s1", title: "Daredevil - Season 1 (2015)", note: "ম্যাট মারডক কীভাবে ডেডডেভিল হলো (নেটফ্লিক্স)।" },
+                    { id: "dp1", title: "Deadpool (2016)", note: "ডেডপুলের অরিজিন।" },
+                    { id: "logan", title: "Logan (2017)", note: "উলভারিনের শ্রেষ্ঠ ও ইমোশনাল মুভি।" },
+                    { id: "venom1", title: "Venom (2018)", note: "টম হার্ডির ভেনম অরিজিন।" }
+                ]
+            },
+            {
+                phase: "ধাপ ২: এমসিইউ অরিজিন - অ্যাভেঞ্জার্স গঠন",
+                description: "এখান থেকে মূল মার্ভেল সিনেমাটিক ইউনিভার্স শুরু। সব ক্যারেক্টারের জন্ম এবং প্রথমবার একসাথে হওয়া।",
+                movies: [
+                    { id: "ca_first", title: "Captain America: The First Avenger (2011)", note: "ক্যাপ্টেন আমেরিকার জন্ম (১৯৪৩ সাল)।" },
+                    { id: "cap_marvel", title: "Captain Marvel (2019)", note: "ক্যাপ্টেন মার্ভেলের অরিজিন (১৯৯৫ সাল)।" },
+                    { id: "im1", title: "Iron Man (2008)", note: "আয়রন ম্যানের শুরু।" },
+                    { id: "im2", title: "Iron Man 2 (2010)", note: "ব্ল্যাক উইডোর প্রথম এন্ট্রি।" },
+                    { id: "hulk_mcu", title: "The Incredible Hulk (2008)", note: "এমসিইউ-এর হাল্ক।" },
+                    { id: "thor1", title: "Thor (2011)", note: "থর ও লোকির শুরু, হকআই-এর প্রথম দেখা।" },
+                    { id: "avengers1", title: "The Avengers (2012)", note: "সবার প্রথম টিম-আপ।" }
+                ]
+            },
+            {
+                phase: "ধাপ ৩: ইউনিভার্স সম্প্রসারণ এবং নতুন হিরো",
+                description: "অ্যাভেঞ্জার্সদের পরের ধাপ এবং নতুন কিছু শক্তিশালী ক্যারেক্টারের জন্ম।",
+                movies: [
+                    { id: "thor2", title: "Thor: The Dark World (2013)", note: "রিয়েলিটি স্টোনের কাহিনি।" },
+                    { id: "im3", title: "Iron Man 3 (2013)", note: "আয়রন ম্যানের মানসিক যুদ্ধ।" },
+                    { id: "ca_ws", title: "Captain America: The Winter Soldier (2014)", note: "ফ্যালকনের শুরু ও উইন্টার সোলজারের গল্প।" },
+                    { id: "gotg1", title: "Guardians of the Galaxy (2014)", note: "স্টার-লর্ড, গ্রুট, রকেটদের অরিজিন।" },
+                    { id: "gotg2", title: "Guardians of the Galaxy Vol. 2 (2017)", note: "গার্ডিয়ান্সদের পরের গল্প।" },
+                    { id: "a_aou", title: "Avengers: Age of Ultron (2015)", note: "ভিশন এবং স্কারলেট উইচ (ওয়ান্ডা)-এর অরিজিন।" },
+                    { id: "antman1", title: "Ant-Man (2015)", note: "অ্যান্ট-ম্যানের অরিজিন।" }
+                ]
+            },
+            {
+                phase: "ধাপ ৪: সিভিল ওয়ার এবং নতুন প্রজন্মের অরিজিন",
+                description: "এই ধাপে অনেক নতুন ক্যারেক্টার আসবে এবং তারা কীভাবে এমসিইউ-তে যোগ দিল তা ক্লিয়ার হবে।",
+                movies: [
+                    { id: "ca_cw", title: "Captain America: Civil War (2016)", note: "ব্ল্যাক প্যান্থার এবং টম হল্যান্ডের স্পাইডার-ম্যানের প্রথম দেখা।" },
+                    { id: "bw", title: "Black Widow (2021)", note: "ব্ল্যাক উইডোর সিক্রেট অতীত।" },
+                    { id: "bp1", title: "Black Panther (2018)", note: "ব্ল্যাক প্যান্থার এবং ওয়াকান্ডার বিস্তারিত।" },
+                    { id: "sm_hc", title: "Spider-Man: Homecoming (2017)", note: "টম হল্যান্ডের প্রথম সলো মুভি।" },
+                    { id: "drstrange1", title: "Doctor Strange (2016)", note: "ডক্টর স্ট্র্যাঞ্জের জাদুকর হওয়ার গল্প।" },
+                    { id: "thor3", title: "Thor: Ragnarok (2017)", note: "থরের নতুন রূপ।" },
+                    { id: "am_wasp", title: "Ant-Man and the Wasp (2018)", note: "কোয়ান্টাম রিয়েলমের শুরু।" }
+                ]
+            },
+            {
+                phase: "ধাপ ৫: ইনফিনিটি ওয়ার এবং সমাপ্তি",
+                description: "সব হিরো একসাথে থ্যানোসের বিরুদ্ধে।",
+                movies: [
+                    { id: "avengers_iw", title: "Avengers: Infinity War (2018)", note: "থ্যানোসের অ্যাটাক।" },
+                    { id: "avengers_eg", title: "Avengers: Endgame (2019)", note: "অ্যাভেঞ্জার্সদের চূড়ান্ত ফাইট।" }
+                ]
+            },
+            {
+                phase: "ধাপ ৬: মাল্টিভার্স সাগা (২০২৬-এর প্রস্তুতি)",
+                description: "এখান থেকেই মাল্টিভার্স ওপেন হবে এবং ধাপ ১-এর ক্যারেক্টাররা এখানে আসা শুরু করবে।",
+                movies: [
+                    { id: "loki_s1", title: "Loki - Season 1 (2021)", note: "মাল্টিভার্স কীভাবে কাজ করে তার রুলস।" },
+                    { id: "wandavision", title: "WandaVision (2021)", note: "স্কারলেট উইচের নতুন রূপ।" },
+                    { id: "sm_ffh", title: "Spider-Man: Far From Home (2019)", note: "এন্ডগেমের পর স্পাইডার-ম্যানের অবস্থা।" },
+                    { id: "sm_nwh", title: "Spider-Man: No Way Home (2021)", note: "সব স্পাইডার-ম্যান, ভিলেন এবং ডেডডেভিলের ক্রসওভার!" },
+                    { id: "ds_mom", title: "Doctor Strange in the Multiverse of Madness (2022)", note: "মাল্টিভার্সের গভীরে যাত্রা (এক্স-মেন রেফারেন্স)।" },
+                    { id: "dp_w", title: "Deadpool & Wolverine (2024)", note: "ফক্স ইউনিভার্সের এমসিইউ-তে এন্ট্রি!" }
+                ]
+            }
+        ];
+
+        const container = document.getElementById('movie-list');
+        let totalMovies = 0;
+
+        // Initialize state from LocalStorage
+        let savedState = JSON.parse(localStorage.getItem('marvelProgress')) || {};
+
+        function updateProgress() {
+            const checkedCount = Object.values(savedState).filter(v => v === true).length;
+            const percentage = totalMovies === 0 ? 0 : Math.round((checkedCount / totalMovies) * 100);
+            
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-text').innerText = `${percentage}% (${checkedCount}/${totalMovies})`;
+        }
+
+        function toggleCheckbox(id) {
+            savedState[id] = !savedState[id];
+            localStorage.setItem('marvelProgress', JSON.stringify(savedState));
+            
+            const label = document.getElementById(`label-${id}`);
+            const note = document.getElementById(`note-${id}`);
+            
+            if(savedState[id]) {
+                label.classList.add('checked-item');
+                note.classList.add('checked-item');
+            } else {
+                label.classList.remove('checked-item');
+                note.classList.remove('checked-item');
+            }
+            updateProgress();
+        }
+
+        // Render the list
+        marvelData.forEach((section, index) => {
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = "mb-10 bg-slate-700/50 p-5 rounded-lg border border-slate-600";
+            
+            sectionDiv.innerHTML = `
+                <h2 class="text-2xl font-bold text-blue-400 mb-2">${section.phase}</h2>
+                <p class="text-slate-300 text-sm mb-4 pb-4 border-b border-slate-600">${section.description}</p>
+                <div class="space-y-3" id="section-${index}"></div>
+            `;
+            container.appendChild(sectionDiv);
+
+            const moviesContainer = document.getElementById(`section-${index}`);
+            
+            section.movies.forEach(movie => {
+                totalMovies++;
+                const isChecked = savedState[movie.id] || false;
+                const textClass = isChecked ? 'checked-item' : '';
+                
+                const movieHtml = `
+                    <label class="flex items-start space-x-3 p-3 hover:bg-slate-700 rounded-lg cursor-pointer transition-colors">
+                        <input type="checkbox" id="${movie.id}" ${isChecked ? 'checked' : ''} 
+                               class="w-5 h-5 text-red-500 bg-slate-900 border-slate-600 rounded focus:ring-red-500 focus:ring-2 mt-1"
+                               onclick="toggleCheckbox('${movie.id}')">
+                        <div class="flex-1">
+                            <span id="label-${movie.id}" class="font-semibold text-lg ${textClass}">${movie.title}</span>
+                            <p id="note-${movie.id}" class="text-sm text-slate-400 ${textClass}">${movie.note}</p>
+                        </div>
+                    </label>
+                `;
+                moviesContainer.innerHTML += movieHtml;
+            });
+        });
+
+        // Initial Progress Call
+        updateProgress();
+    </script>
+</body>
+</html>
