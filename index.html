@@ -19,7 +19,7 @@
         .other { background-color: #4b5563; color: white; }
         .future { background-color: #059669; color: white; }
         .date-badge { font-size: 0.75rem; color: #94a3b8; font-family: monospace; }
-        .modal-backdrop { background: rgba(0,0,0,0.7); backdrop-filter: blur(2px); }
+        .modal-backdrop { background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); }
         .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0f172a; border-top: 1px solid #334155; z-index: 40; }
         .sync-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
     </style>
@@ -96,6 +96,33 @@
         </div>
     </div>
 
+    <!-- Info / Details / Connection Modal -->
+    <div id="infoModal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-lg w-full relative max-h-[90vh] overflow-y-auto">
+            <button id="closeInfoModal" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div class="flex gap-4 mb-4">
+                <img id="modalPoster" src="" alt="Poster" class="w-24 h-36 object-cover rounded-lg border border-slate-700 shadow">
+                <div>
+                    <h3 id="modalTitle" class="text-xl font-bold text-white mb-1"></h3>
+                    <p id="modalDate" class="text-xs text-slate-400 mb-2"></p>
+                    <div id="modalBadge"></div>
+                </div>
+            </div>
+            <div class="space-y-4 text-sm">
+                <div>
+                    <h4 id="modalDescHeader" class="font-bold text-slate-200 mb-1"></h4>
+                    <p id="modalDesc" class="text-slate-300 leading-relaxed bg-slate-800 p-3 rounded-lg border border-slate-700/50"></p>
+                </div>
+                <div>
+                    <h4 id="modalConnHeader" class="font-bold text-blue-400 mb-1"></h4>
+                    <p id="modalConn" class="text-slate-300 leading-relaxed bg-slate-800/80 p-3 rounded-lg border border-blue-900/40"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
@@ -110,62 +137,74 @@
             check: `<svg class="w-4 h-4 inline-block mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`,
             cross: `<svg class="w-4 h-4 inline-block mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`,
             warning: `<svg class="w-4 h-4 inline-block mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`,
-            info: `<svg class="w-4 h-4 inline-block mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
+            info: `<svg class="w-4 h-4 inline-block mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+            play: `<svg class="w-3.5 h-3.5 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>`,
+            link: `<svg class="w-3.5 h-3.5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>`
         };
 
         // ---------------- i18n ----------------
         const i18n = {
             bn: {
                 title: "মার্ভেল ক্রনোলজিক্যাল ওয়াচলিস্ট",
-                subtitle: "রিলিজ ডেট (মাস + বছর) অনুযায়ী সাজানো — MCU, Sony Spider-Man Universe, Fox X-Men, Netflix ও অ্যানিমেটেড স্পাইডার-ভার্স, সব একসাথে।",
-                todayNote: "আজকের তারিখ: ২৭ জুলাই, ২০২৬ — যা রিলিজ হয়ে গেছে তা স্বয়ংক্রিয়ভাবে চিহ্নিত, বাকিগুলো \"আপকামিং\" ব্যাজ সহ দেখাবে।",
+                subtitle: "রিলিজ ডেট অনুযায়ী সাজানো: MCU, Sony Spider-Man Universe, Fox X-Men, Netflix ও অ্যানিমেটেড স্পাইডার-ভার্স, সব একসাথে।",
+                todayNote: "আজকের তারিখ: ২৭ জুলাই, ২০২৬. যা রিলিজ হয়ে গেছে তা চিহ্নিত, বাকিগুলো \"আপকামিং\" ব্যাজ সহ দেখাবে।",
                 progressLabel: "মিশন প্রোগ্রেস",
                 upcoming: "আপকামিং",
+                btnDetails: "ডিটেইলস",
+                btnTrailer: "ট্রেইলার",
+                btnMcuConn: "MCU সংযোগ",
+                descHeader: "বিবরণ",
+                connHeader: "MCU ও মাল্টিভার্স সংযোগ",
                 badges: { mcu:"MCU", mcutv:"MCU সিরিজ", sony:"SONY", sonyanim:"SONY অ্যানিমেটেড", fox:"FOX", netflix:"NETFLIX", other:"অন্যান্য" },
                 genKeyBtn: `${icons.key} কী জেনারেট করুন`,
                 syncBtn: `${icons.sync} সিঙ্ক করুন`,
                 syncedText: (n)=>`সিঙ্কড (${n} ডিভাইস)`,
-                notSyncedText: "সিঙ্ক করা নেই — লোকাল ব্রাউজারে সেভ হচ্ছে",
+                notSyncedText: "সিঙ্ক করা নেই: লোকাল ব্রাউজারে সেভ হচ্ছে",
                 genModalTitle: "নতুন সিঙ্ক-কী তৈরি করুন",
-                genModalDesc: "নাম, ইমেইল ও দেশ দিন। এই তথ্য দিয়ে একটি ইউনিক কী তৈরি হবে, যেটা key.json ফাইল হিসেবে মাত্র একবার ডাউনলোড করা যাবে — হারালে আবার নতুন কী জেনারেট করতে হবে।",
+                genModalDesc: "নাম, ইমেইল ও দেশ দিন। এই তথ্য দিয়ে একটি ইউনিক কী তৈরি হবে, যা key.json ফাইল হিসেবে মাত্র একবার ডাউনলোড করা যাবে।",
                 namePh: "আপনার নাম", emailPh: "ইমেইল", countryPh: "দেশ",
-                genOnceWarning: `${icons.warning} <span>কী শুধু একবারই ডাউনলোড হবে। ফাইলটা নিরাপদ জায়গায় সংরক্ষণ করুন — এটা দিয়েই অন্য ডিভাইসে সিঙ্ক করবেন।</span>`,
+                genOnceWarning: `${icons.warning} <span>কী শুধু একবারই ডাউনলোড হবে। ফাইলটি নিরাপদ জায়গায় রাখুন, এটি দিয়েই অন্য ডিভাইসে সিঙ্ক করবেন।</span>`,
                 genSubmit: "জেনারেট ও ডাউনলোড করুন",
                 genCancel: "বাতিল",
-                genMissing: `${icons.warning} নাম, ইমেইল ও দেশ — সবগুলো পূরণ করুন।`,
+                genMissing: `${icons.warning} নাম, ইমেইল ও দেশ: সবগুলো পূরণ করুন।`,
                 genWorking: `${icons.sync} কী তৈরি হচ্ছে...`,
                 genDone: `${icons.check} কী তৈরি হয়ে গেছে এবং ডাউনলোড হয়েছে!`,
                 genError: `${icons.cross} কী তৈরি করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।`,
-                syncInvalidKey: "এই কী-টা ভ্যালিড না। ফাইলটা ঠিক আছে কি না চেক করুন।",
-                syncWaitingApproval: "আরেকটা ডিভাইসে অনুমোদনের অপেক্ষায় আছে — সেই ডিভাইসে ব্রাউজার খুলে 'অনুমোদন করুন' চাপুন।",
-                syncApprovedNow: "ডিভাইস অনুমোদিত হয়েছে, সিঙ্ক হয়ে গেছে!",
-                approvalBannerText: (label)=>`${icons.info} <span>একটা নতুন ডিভাইস (${label}) আপনার কী দিয়ে সিঙ্ক করতে চাইছে। এটা কি আপনি?</span>`,
+                syncInvalidKey: "এই কী-টি ভ্যালিড না। ফাইলটি চেক করুন।",
+                syncWaitingApproval: "অন্য ডিভাইসে অনুমোদনের অপেক্ষায় আছে। সেই ডিভাইসে ব্রাউজার খুলে 'অনুমোদন করুন' চাপুন।",
+                syncApprovedNow: "ডিভাইস অনুমোদিত হয়েছে, সিঙ্ক সফল!",
+                approvalBannerText: (label)=>`${icons.info} <span>একটি নতুন ডিভাইস (${label}) আপনার কী দিয়ে সিঙ্ক করতে চাইছে। এটা কি আপনি?</span>`,
                 approveBtn: `${icons.check} অনুমোদন করুন`,
                 denyBtn: `${icons.cross} প্রত্যাখ্যান`
             },
             en: {
                 title: "Marvel Chronological Watchlist",
-                subtitle: "Sorted by real release date (month + year) — MCU, Sony's Spider-Man Universe, Fox's X-Men, Netflix, and the animated Spider-Verse, all in one timeline.",
-                todayNote: "Today's date: July 27, 2026 — anything already released is auto-marked, everything else shows an \"Upcoming\" badge.",
+                subtitle: "Sorted by real release date: MCU, Sony's Spider-Man Universe, Fox's X-Men, Netflix, and animated Spider-Verse.",
+                todayNote: "Today's date: July 27, 2026. Released titles are auto-marked, upcoming items show an \"Upcoming\" badge.",
                 progressLabel: "Mission Progress",
                 upcoming: "Upcoming",
+                btnDetails: "Details",
+                btnTrailer: "Trailer",
+                btnMcuConn: "MCU Connect",
+                descHeader: "Overview",
+                connHeader: "MCU & Multiverse Connection",
                 badges: { mcu:"MCU", mcutv:"MCU SERIES", sony:"SONY", sonyanim:"SONY ANIMATED", fox:"FOX", netflix:"NETFLIX", other:"OTHER" },
                 genKeyBtn: `${icons.key} Generate Key`,
                 syncBtn: `${icons.sync} Sync`,
                 syncedText: (n)=>`Synced (${n} devices)`,
-                notSyncedText: "Not synced — saving to this browser only",
+                notSyncedText: "Not synced: saving to this browser only",
                 genModalTitle: "Create a new sync key",
-                genModalDesc: "Enter your name, email and country. We'll generate a unique key you can download as a key.json file — only once. If you lose it, you'll need to generate a new one.",
+                genModalDesc: "Enter your name, email and country. We will generate a unique key downloadable once as key.json.",
                 namePh: "Your name", emailPh: "Email", countryPh: "Country",
-                genOnceWarning: `${icons.warning} <span>The key can only be downloaded once. Keep the file safe — you'll use it to sync your other devices.</span>`,
+                genOnceWarning: `${icons.warning} <span>The key can only be downloaded once. Keep the file safe to sync other devices.</span>`,
                 genSubmit: "Generate & Download",
                 genCancel: "Cancel",
                 genMissing: `${icons.warning} Please fill in name, email and country.`,
                 genWorking: `${icons.sync} Generating key...`,
                 genDone: `${icons.check} Key created and downloaded!`,
                 genError: `${icons.cross} Something went wrong generating the key. Please try again.`,
-                syncInvalidKey: "That key isn't valid. Double check the file.",
-                syncWaitingApproval: "Waiting for approval on another device — open the app there and tap 'Approve'.",
+                syncInvalidKey: "That key is not valid. Double check the file.",
+                syncWaitingApproval: "Waiting for approval on another device. Open the app there and tap 'Approve'.",
                 syncApprovedNow: "Device approved and synced!",
                 approvalBannerText: (label)=>`${icons.info} <span>A new device (${label}) is trying to sync using your key. Is this you?</span>`,
                 approveBtn: `${icons.check} Approve`,
@@ -174,119 +213,50 @@
         };
         let lang = localStorage.getItem('marvel_lang') || 'bn';
 
-        // ---------------- Movie data ----------------
-        const marvelData = [
-            { id:"blade1998", title:"Blade (1998)", date:"1998-08-21", uni:"other", note:"ওয়েসলি স্নাইপসের ব্লেড — প্রথম বড় বাজেটের Marvel-চরিত্র ভিত্তিক হিট মুভি, MCU/Fox-এর বাইরে New Line Cinema প্রোডাকশন।", note_en:"Wesley Snipes' Blade — the first big-budget Marvel-character hit, outside MCU/Fox (New Line Cinema)." },
-            { id:"xmen2000", title:"X-Men (2000)", date:"2000-07-14", uni:"fox", note:"প্রফেসর এক্স, ম্যাগনেটো এবং উলভারিনের অরিজিন ও মিউট্যান্টদের দুনিয়ার শুরু।", note_en:"Origin of Professor X, Magneto and Wolverine — the start of the mutant world." },
-            { id:"blade2", title:"Blade II (2002)", date:"2002-03-22", uni:"other", note:"গিয়ের্মো দেল তোরো পরিচালিত সিক্যুয়েল।", note_en:"Guillermo del Toro-directed sequel." },
-            { id:"sm1", title:"Spider-Man (2002)", date:"2002-05-03", uni:"sony", note:"টোবি ম্যাগুয়্যারের স্পাইডার-ম্যান অরিজিন, গ্রিন গবলিন।", note_en:"Tobey Maguire's Spider-Man origin, Green Goblin." },
-            { id:"daredevil2003", title:"Daredevil (2003)", date:"2003-02-14", uni:"other", note:"বেন অ্যাফ্লেকের ম্যাট মারডক — ২০০৩ সালের অরিজিনাল ফিল্ম (২০ শতাব্দী ফক্স)।", note_en:"Ben Affleck's Matt Murdock — the original 2003 film (20th Century Fox)." },
-            { id:"x2", title:"X2: X-Men United (2003)", date:"2003-05-02", uni:"fox", note:"মিউট্যান্টদের বিরুদ্ধে সরকারি ষড়যন্ত্র এবং ফিনিক্সের ইঙ্গিত।", note_en:"A government conspiracy against mutants, and a first hint of Phoenix." },
-            { id:"sm2", title:"Spider-Man 2 (2004)", date:"2004-06-30", uni:"sony", note:"ডক অকের এন্ট্রি, স্পাইডার-ম্যান ফ্র্যাঞ্চাইজির অন্যতম সেরা কিস্তি।", note_en:"Doc Ock's entry — one of the best entries in the franchise." },
-            { id:"blade3", title:"Blade: Trinity (2004)", date:"2004-12-08", uni:"other", note:"ব্লেড ট্রিলজির সমাপ্তি।", note_en:"The closing chapter of the Blade trilogy." },
-            { id:"elektra", title:"Elektra (2005)", date:"2005-01-14", uni:"fox", note:"ডেয়ারডেভিল (২০০৩) থেকে স্পিন-অফ।", note_en:"A spin-off from Daredevil (2003)." },
-            { id:"ff2005", title:"Fantastic Four (2005)", date:"2005-07-08", uni:"fox", note:"রিড রিচার্ডস, সু স্টর্ম, জনি স্টর্ম ও বেন গ্রিমের অরিজিন।", note_en:"Origin of Reed Richards, Sue Storm, Johnny Storm and Ben Grimm." },
-            { id:"sm3", title:"Spider-Man 3 (2007)", date:"2007-05-04", uni:"sony", note:"ভেনম, স্যান্ডম্যান এবং নিউ গবলিনের গল্প।", note_en:"Venom, Sandman and the New Goblin's story." },
-            { id:"ff2007", title:"Fantastic Four: Rise of the Silver Surfer (2007)", date:"2007-06-15", uni:"fox", note:"সিলভার সার্ফার ও গ্যালাক্টাসের হুমকি।", note_en:"The threat of Silver Surfer and Galactus." },
-            { id:"im1", title:"Iron Man (2008)", date:"2008-05-02", uni:"mcu", note:"টনি স্টার্কের আয়রন ম্যান হওয়ার যুগান্তকারী গল্প — MCU-এর সূচনা।", note_en:"Tony Stark's landmark Iron Man origin — the start of the MCU." },
-            { id:"hulk_mcu", title:"The Incredible Hulk (2008)", date:"2008-06-13", uni:"mcu", note:"ব্রুস ব্যানারের MCU অরিজিন (পরে অভিনেতা পরিবর্তন হয়ে মার্ক রাফালো)।", note_en:"Bruce Banner's MCU origin (later recast as Mark Ruffalo)." },
-            { id:"punisher_wz", title:"Punisher: War Zone (2008)", date:"2008-12-05", uni:"other", note:"ফ্র্যাঙ্ক ক্যাসলের রিবুট ভার্সন।", note_en:"A rebooted take on Frank Castle." },
-            { id:"xmovo", title:"X-Men Origins: Wolverine (2009)", date:"2009-05-01", uni:"fox", note:"উলভারিনের ব্যাকস্টোরি ও ডেডপুলের প্রথম (ভিন্ন) ভার্সন।", note_en:"Wolverine's backstory and an early (different) version of Deadpool." },
-            { id:"im2", title:"Iron Man 2 (2010)", date:"2010-05-07", uni:"mcu", note:"ওয়ার মেশিনের জন্ম এবং ব্ল্যাক উইডোর MCU-তে গ্র্যান্ড এন্ট্রি।", note_en:"War Machine's birth and Black Widow's grand entry into the MCU." },
-            { id:"thor1", title:"Thor (2011)", date:"2011-05-06", uni:"mcu", note:"থর ও লোকির পরিচয়, আসগার্ডের গল্প।", note_en:"Introducing Thor and Loki, and the story of Asgard." },
-            { id:"xmenfc", title:"X-Men: First Class (2011)", date:"2011-06-03", uni:"fox", note:"এক্স-মেনরা একদম শুরুতে কীভাবে এক হয়েছিল।", note_en:"How the X-Men first came together." },
-            { id:"ca_first", title:"Captain America: The First Avenger (2011)", date:"2011-07-22", uni:"mcu", note:"সাল ১৯৪৩। স্টিভ রজার্সের সুপার সোলজার হওয়া এবং টেসার‍্যাক্টের প্রথম আবির্ভাব।", note_en:"1943. Steve Rogers becomes a super soldier; first appearance of the Tesseract." },
-            { id:"avengers1", title:"The Avengers (2012)", date:"2012-05-04", uni:"mcu", note:"পৃথিবীকে বাঁচাতে প্রথমবার ৬ জন হিরোর একসাথে হওয়া।", note_en:"Six heroes team up for the first time to save Earth." },
-            { id:"asm1", title:"The Amazing Spider-Man (2012)", date:"2012-07-03", uni:"sony", note:"অ্যান্ড্রু গারফিল্ডের স্পাইডার-ম্যান, লিজার্ডের গল্প।", note_en:"Andrew Garfield's Spider-Man and the Lizard's story." },
-            { id:"wolverine2013", title:"The Wolverine (2013)", date:"2013-07-26", uni:"fox", note:"জাপানে উলভারিনের একক মিশন।", note_en:"Wolverine's solo mission in Japan." },
-            { id:"im3", title:"Iron Man 3 (2013)", date:"2013-05-03", uni:"mcu", note:"অ্যাভেঞ্জার্সের ঘটনার পর টনি স্টার্কের ট্রমা এবং নতুন স্যুট।", note_en:"Tony Stark's trauma after the Avengers, and new suits." },
-            { id:"thor2", title:"Thor: The Dark World (2013)", date:"2013-11-08", uni:"mcu", note:"রিয়েলিটি স্টোনের কাহিনি।", note_en:"The story of the Reality Stone." },
-            { id:"ca_ws", title:"Captain America: The Winter Soldier (2014)", date:"2014-04-04", uni:"mcu", note:"ফ্যালকনের শুরু, শিল্ডের পতন এবং উইন্টার সোলজারের ফিরে আসা।", note_en:"Falcon debuts, SHIELD falls, and the Winter Soldier returns." },
-            { id:"asm2", title:"The Amazing Spider-Man 2 (2014)", date:"2014-05-02", uni:"sony", note:"ইলেকট্রো ও গ্রিন গবলিনের গল্প।", note_en:"The story of Electro and Green Goblin." },
-            { id:"xmen_dofp", title:"X-Men: Days of Future Past (2014)", date:"2014-05-23", uni:"fox", note:"টাইম ট্রাভেলের মাধ্যমে দুই টাইমলাইনের এক্স-মেনদের সংযোগ।", note_en:"Time travel links the two X-Men timelines." },
-            { id:"gotg1", title:"Guardians of the Galaxy (2014)", date:"2014-08-01", uni:"mcu", note:"স্টার-লর্ড, গ্রুট, রকেট, গামোরাদের অরিজিন। পাওয়ার স্টোনের খোঁজ।", note_en:"Origin of Star-Lord, Groot, Rocket and Gamora; the hunt for the Power Stone." },
-            { id:"dd_s1", title:"Daredevil - Season 1 (Netflix, 2015)", date:"2015-04-10", uni:"netflix", note:"ম্যাট মারডকের ডেয়ারডেভিল হওয়া এবং কিংপিনের সাথে লড়াই।", note_en:"Matt Murdock becomes Daredevil and fights Kingpin." },
-            { id:"a_aou", title:"Avengers: Age of Ultron (2015)", date:"2015-05-01", uni:"mcu", note:"মাইন্ড স্টোন থেকে ভিশন এবং স্কারলেট উইচের জন্ম।", note_en:"Vision is born from the Mind Stone, and Scarlet Witch emerges." },
-            { id:"antman1", title:"Ant-Man (2015)", date:"2015-07-17", uni:"mcu", note:"স্কট ল্যাং কীভাবে চোর থেকে অ্যান্ট-ম্যান হলো।", note_en:"Scott Lang goes from thief to Ant-Man." },
-            { id:"ff2015", title:"Fantastic Four (2015)", date:"2015-08-07", uni:"fox", note:"ফ্যান্টাস্টিক ফোরের রিবুট (ফক্স)।", note_en:"Fox's reboot of the Fantastic Four." },
-            { id:"jj_s1", title:"Jessica Jones - Season 1 (Netflix, 2015)", date:"2015-11-20", uni:"netflix", note:"জেসিকা জোন্সের সুপার-স্ট্রেংথ ও কিলগ্রেভের সাথে লড়াই।", note_en:"Jessica Jones' super-strength and her fight against Kilgrave." },
-            { id:"dp1", title:"Deadpool (2016)", date:"2016-02-12", uni:"fox", note:"ওয়েড উইলসনের ডেডপুল হয়ে ওঠা।", note_en:"Wade Wilson becomes Deadpool." },
-            { id:"dd_s2", title:"Daredevil - Season 2 (Netflix, 2016)", date:"2016-03-18", uni:"netflix", note:"পানিশার ও ইলেক্ট্রার এন্ট্রি।", note_en:"Punisher and Elektra enter the story." },
-            { id:"ca_cw", title:"Captain America: Civil War (2016)", date:"2016-05-06", uni:"mcu", note:"হিরোদের মধ্যে মারামারি। ব্ল্যাক প্যান্থার এবং টম হল্যান্ডের স্পাইডার-ম্যানের MCU-তে এন্ট্রি।", note_en:"Heroes clash. Black Panther and Tom Holland's Spider-Man enter the MCU." },
-            { id:"luke_s1", title:"Luke Cage - Season 1 (Netflix, 2016)", date:"2016-09-30", uni:"netflix", note:"হার্লেমের সুপার-স্ট্রং হিরোর গল্প।", note_en:"The story of Harlem's bulletproof hero." },
-            { id:"drstrange1", title:"Doctor Strange (2016)", date:"2016-11-04", uni:"mcu", note:"স্টিভেন স্ট্র্যাঞ্জের জাদুকর হওয়ার গল্প এবং টাইম স্টোনের পরিচয়।", note_en:"Stephen Strange becomes a sorcerer; the Time Stone is introduced." },
-            { id:"logan", title:"Logan (2017)", date:"2017-03-03", uni:"fox", note:"উলভারিনের জীবনের সবচেয়ে ইমোশনাল ও শেষ গল্প।", note_en:"Wolverine's most emotional, final story." },
-            { id:"ifist_s1", title:"Iron Fist - Season 1 (Netflix, 2017)", date:"2017-03-17", uni:"netflix", note:"ড্যানি র‍্যান্ডের কুং-ফু হিরো হয়ে ওঠা।", note_en:"Danny Rand becomes a kung-fu hero." },
-            { id:"gotg2", title:"Guardians of the Galaxy Vol. 2 (2017)", date:"2017-05-05", uni:"mcu", note:"স্টার-লর্ডের বাবার পরিচয় এবং ম্যান্টিসের এন্ট্রি।", note_en:"Star-Lord's father is revealed; Mantis joins the crew." },
-            { id:"sm_hc", title:"Spider-Man: Homecoming (2017)", date:"2017-07-07", uni:"mcu", note:"টম হল্যান্ডের স্পাইডার-ম্যানের প্রথম সলো মিশন।", note_en:"Tom Holland's Spider-Man's first solo mission." },
-            { id:"defenders", title:"The Defenders (Netflix, 2017)", date:"2017-08-18", uni:"netflix", note:"ডেয়ারডেভিল, জেসিকা জোন্স, লুক কেজ ও আয়রন ফিস্টের প্রথম টিম-আপ।", note_en:"First team-up of Daredevil, Jessica Jones, Luke Cage and Iron Fist." },
-            { id:"thor3", title:"Thor: Ragnarok (2017)", date:"2017-11-03", uni:"mcu", note:"থরের নতুন শক্তি, হাল্কের গ্ল্যাডিয়েটর রূপ এবং আসগার্ডের পতন।", note_en:"Thor's new power, Hulk as gladiator, and Asgard's fall." },
-            { id:"punisher_s1", title:"The Punisher - Season 1 (Netflix, 2017)", date:"2017-11-17", uni:"netflix", note:"ফ্র্যাঙ্ক ক্যাসলের একক গল্প।", note_en:"Frank Castle's solo story." },
-            { id:"bp1", title:"Black Panther (2018)", date:"2018-02-16", uni:"mcu", note:"ওয়াকান্ডার রাজা হিসেবে ব্ল্যাক প্যান্থারের দায়িত্ব গ্রহণ।", note_en:"Black Panther takes the throne of Wakanda." },
-            { id:"jj_s2", title:"Jessica Jones - Season 2 (Netflix, 2018)", date:"2018-03-08", uni:"netflix", note:"জেসিকার নিজের অতীত ও উৎস অনুসন্ধান।", note_en:"Jessica investigates her own past and origin." },
-            { id:"avengers_iw", title:"Avengers: Infinity War (2018)", date:"2018-04-27", uni:"mcu", note:"থ্যানোসের সব পাথর খোঁজার মিশন এবং হিরোদের সবচেয়ে বড় হার।", note_en:"Thanos hunts all the Stones; the heroes' biggest defeat." },
-            { id:"dp2", title:"Deadpool 2 (2018)", date:"2018-05-18", uni:"fox", note:"কেবল ও ডোমিনোর এন্ট্রি এবং টাইম ট্রাভেল।", note_en:"Cable and Domino arrive, plus time travel." },
-            { id:"luke_s2", title:"Luke Cage - Season 2 (Netflix, 2018)", date:"2018-06-22", uni:"netflix", note:"বুশমাস্টারের সাথে লুকের লড়াই।", note_en:"Luke's fight against Bushmaster." },
-            { id:"am_wasp", title:"Ant-Man and the Wasp (2018)", date:"2018-07-06", uni:"mcu", note:"কোয়ান্টাম রিয়েলমের ডিটেইলস (যা এন্ডগেমে কাজে লাগবে)।", note_en:"Quantum Realm details that matter for Endgame." },
-            { id:"ifist_s2", title:"Iron Fist - Season 2 (Netflix, 2018)", date:"2018-09-07", uni:"netflix", note:"ড্যানির সাথে ডেভোস ও টাইফয়েড মেরির গল্প।", note_en:"Danny vs. Davos and Typhoid Mary." },
-            { id:"venom1", title:"Venom (2018)", date:"2018-10-05", uni:"sony", note:"টম হার্ডির ভেনম কীভাবে তৈরি হলো — সনির স্পাইডার-ম্যান ইউনিভার্সের শুরু।", note_en:"How Tom Hardy's Venom came to be — the start of Sony's Spider-Man Universe." },
-            { id:"dd_s3", title:"Daredevil - Season 3 (Netflix, 2018)", date:"2018-10-19", uni:"netflix", note:"কিংপিনের এফবিআই এজেন্ট হিসেবে ফিরে আসা।", note_en:"Kingpin returns, posing as an FBI asset." },
-            { id:"punisher_s2", title:"The Punisher - Season 2 (Netflix, 2019)", date:"2019-01-18", uni:"netflix", note:"ফ্র্যাঙ্ক ক্যাসলের দ্বিতীয় সিজন।", note_en:"Frank Castle's second season." },
-            { id:"cap_marvel", title:"Captain Marvel (2019)", date:"2019-03-08", uni:"mcu", note:"সাল ১৯৯৫। ক্যারল ড্যানভার্সের অরিজিন এবং নিক ফিউরির 'অ্যাভেঞ্জার্স' নামটা পাওয়া।", note_en:"1995. Carol Danvers' origin, and Nick Fury names the Avengers." },
-            { id:"avengers_eg", title:"Avengers: Endgame (2019)", date:"2019-04-26", uni:"mcu", note:"টাইম ট্রাভেল, চূড়ান্ত লড়াই এবং আয়রন ম্যান ও ক্যাপের গল্পের সমাপ্তি।", note_en:"Time travel, the final battle, and the end of Iron Man and Cap's arcs." },
-            { id:"jj_s3", title:"Jessica Jones - Season 3 (Netflix, 2019)", date:"2019-06-14", uni:"netflix", note:"নেটফ্লিক্স মার্ভেল যুগের শেষ সিজন।", note_en:"The final season of the Netflix Marvel era." },
-            { id:"darkphoenix", title:"Dark Phoenix (2019)", date:"2019-06-07", uni:"fox", note:"জিন গ্রের ফিনিক্স ফোর্স গ্রহণ — মূল ফক্স এক্স-মেন সিরিজের সমাপ্তি।", note_en:"Jean Grey takes on the Phoenix Force — the end of Fox's main X-Men series." },
-            { id:"sm_ffh", title:"Spider-Man: Far From Home (2019)", date:"2019-07-02", uni:"mcu", note:"এন্ডগেমের পর পিটারের মানসিক অবস্থা এবং মিস্টেরিও দ্বারা আইডেন্টিটি ফাঁস।", note_en:"Peter's state of mind after Endgame, and Mysterio exposes his identity." },
-            { id:"wandavision", title:"WandaVision (Disney+, 2021)", date:"2021-01-15", uni:"mcutv", note:"ওয়ান্ডা কীভাবে 'স্কারলেট উইচ' হয়ে ওঠে।", note_en:"How Wanda becomes the Scarlet Witch." },
-            { id:"tfaws", title:"The Falcon and the Winter Soldier (Disney+, 2021)", date:"2021-03-19", uni:"mcutv", note:"স্যাম উইলসনের নতুন ক্যাপ্টেন আমেরিকা হয়ে ওঠার পথ।", note_en:"Sam Wilson's path to becoming the new Captain America." },
-            { id:"loki_s1", title:"Loki - Season 1 (Disney+, 2021)", date:"2021-06-09", uni:"mcutv", note:"মাল্টিভার্স কীভাবে কাজ করে এবং ক্যাং-এর প্রথম হিন্ট।", note_en:"How the multiverse works, and the first hint of Kang." },
-            { id:"bw", title:"Black Widow (2021)", date:"2021-07-09", uni:"mcu", note:"সিভিল ওয়ারের পর ব্ল্যাক উইডোর পালিয়ে থাকার গল্প এবং ইয়েলেনার এন্ট্রি।", note_en:"Black Widow on the run after Civil War, and Yelena's introduction." },
-            { id:"whatif_s1", title:"What If...? - Season 1 (Disney+, 2021)", date:"2021-08-11", uni:"mcutv", note:"মাল্টিভার্সের বিকল্প টাইমলাইন এক্সপ্লোর।", note_en:"Exploring alternate multiverse timelines." },
-            { id:"shangchi", title:"Shang-Chi and the Legend of the Ten Rings (2021)", date:"2021-09-03", uni:"mcu", note:"টেন রিংসের নতুন হিরোর অরিজিন।", note_en:"Origin of the new hero behind the Ten Rings." },
-            { id:"venom2", title:"Venom: Let There Be Carnage (2021)", date:"2021-10-01", uni:"sony", note:"কার্নেজের এন্ট্রি।", note_en:"Carnage enters the story." },
-            { id:"eternals", title:"Eternals (2021)", date:"2021-11-05", uni:"mcu", note:"হাজার বছর ধরে পৃথিবীতে থাকা অমর দলের গল্প।", note_en:"The story of an immortal team that's lived on Earth for millennia." },
-            { id:"hawkeye_s1", title:"Hawkeye (Disney+, 2021)", date:"2021-11-24", uni:"mcutv", note:"ক্লিন্ট বার্টন ও কেট বিশপের ক্রিসমাস মিশন।", note_en:"Clint Barton and Kate Bishop's Christmas mission." },
-            { id:"sm_nwh", title:"Spider-Man: No Way Home (2021)", date:"2021-12-17", uni:"mcu", note:"ডক্টর স্ট্র্যাঞ্জের ভুলে মাল্টিভার্স ভেঙে টোবি, অ্যান্ড্রু, ডক অক, গবলিন ইত্যাদির এন্ট্রি!", note_en:"Doctor Strange's spell breaks the multiverse open — Tobey, Andrew, Doc Ock, Goblin and more arrive!" },
-            { id:"moonknight", title:"Moon Knight (Disney+, 2022)", date:"2022-03-30", uni:"mcutv", note:"মার্ক স্পেক্টর/স্টিভেন গ্র্যান্টের ডিসোসিয়েটিভ আইডেন্টিটি ও মিশরীয় দেবতা খনসু।", note_en:"Marc Spector/Steven Grant's dissociative identity and the Egyptian god Khonshu." },
-            { id:"morbius", title:"Morbius (2022)", date:"2022-04-01", uni:"sony", note:"জ্যারেড লেটোর ভ্যাম্পায়ার-বিজ্ঞানী মরবিয়াস।", note_en:"Jared Leto's vampiric scientist, Morbius." },
-            { id:"ds_mom", title:"Doctor Strange in the Multiverse of Madness (2022)", date:"2022-05-06", uni:"mcu", note:"মাল্টিভার্সে ট্রাভেল, স্কারলেট উইচের ধ্বংসলীলা এবং প্রফেসর এক্স-এর ক্যামিও।", note_en:"Multiverse travel, Scarlet Witch's rampage, and a Professor X cameo." },
-            { id:"msmarvel", title:"Ms. Marvel (Disney+, 2022)", date:"2022-06-08", uni:"mcutv", note:"কামালা খানের সুপারহিরো হয়ে ওঠার কিশোরী গল্প।", note_en:"Kamala Khan's teenage journey to becoming a superhero." },
-            { id:"thor4", title:"Thor: Love and Thunder (2022)", date:"2022-07-08", uni:"mcu", note:"গর ও মাইটি থরের গল্প।", note_en:"The story of Gorr and Mighty Thor." },
-            { id:"shehulk", title:"She-Hulk: Attorney at Law (Disney+, 2022)", date:"2022-08-18", uni:"mcutv", note:"জেনিফার ওয়াল্টার্সের হাল্ক আইনজীবী হয়ে ওঠা।", note_en:"Jennifer Walters becomes the Hulk lawyer." },
-            { id:"wolfnight", title:"Werewolf by Night (Disney+ Special, 2022)", date:"2022-10-07", uni:"mcutv", note:"হরর-থিমের স্পেশাল প্রেজেন্টেশন।", note_en:"A horror-themed special presentation." },
-            { id:"bp2", title:"Black Panther: Wakanda Forever (2022)", date:"2022-11-11", uni:"mcu", note:"চ্যাডউইক বোজম্যানের পর ওয়াকান্ডার নতুন রক্ষক শুরি ও নামোরের এন্ট্রি।", note_en:"After Chadwick Boseman, Shuri protects Wakanda; Namor arrives." },
-            { id:"gotg_holiday", title:"The Guardians of the Galaxy Holiday Special (Disney+, 2022)", date:"2022-11-25", uni:"mcutv", note:"ছোট স্পেশাল, ভল. ৩-এর আগে।", note_en:"A short special ahead of Vol. 3." },
-            { id:"antman3", title:"Ant-Man and the Wasp: Quantumania (2023)", date:"2023-02-17", uni:"mcu", note:"কোয়ান্টাম রিয়েলমে ক্যাং দ্য কনকারারের এন্ট্রি।", note_en:"Kang the Conqueror arrives in the Quantum Realm." },
-            { id:"gotg3", title:"Guardians of the Galaxy Vol. 3 (2023)", date:"2023-05-05", uni:"mcu", note:"রকেটের ব্যাকস্টোরি ও গার্ডিয়ানদের বিদায়।", note_en:"Rocket's backstory and the Guardians' farewell." },
-            { id:"acrossverse", title:"Spider-Man: Across the Spider-Verse (2023)", date:"2023-06-02", uni:"sonyanim", note:"মাইলস মোরালেসের মাল্টিভার্স-হপিং অ্যানিমেটেড সিক্যুয়েল।", note_en:"Miles Morales' multiverse-hopping animated sequel." },
-            { id:"secretinvasion", title:"Secret Invasion (Disney+, 2023)", date:"2023-06-21", uni:"mcutv", note:"স্ক্রাল ইনভেশন ও নিক ফিউরির গল্প।", note_en:"The Skrull invasion and Nick Fury's story." },
-            { id:"loki_s2", title:"Loki - Season 2 (Disney+, 2023)", date:"2023-10-06", uni:"mcutv", note:"টাইমলাইন সংরক্ষণ ও লোকির চূড়ান্ত ত্যাগ।", note_en:"Preserving the timelines, and Loki's ultimate sacrifice." },
-            { id:"themarvels", title:"The Marvels (2023)", date:"2023-11-10", uni:"mcu", note:"ক্যারল, কামালা ও মনিকার একসাথে লড়াই।", note_en:"Carol, Kamala and Monica team up." },
-            { id:"echo", title:"Echo (Disney+, 2024)", date:"2024-01-09", uni:"mcutv", note:"মায়া লোপেজের কিংপিনের বিরুদ্ধে প্রতিশোধ।", note_en:"Maya Lopez's revenge against Kingpin." },
-            { id:"madameweb", title:"Madame Web (2024)", date:"2024-02-14", uni:"sony", note:"ক্যাসান্দ্রা ওয়েবের সাইকিক ক্ষমতার গল্প।", note_en:"Cassandra Web's psychic-power story." },
-            { id:"xmen97", title:"X-Men '97 (Disney+, 2024)", date:"2024-03-20", uni:"fox", note:"৯০-দশকের এক্স-মেন অ্যানিমেটেড সিরিজের অ্যানিমেটেড রিভাইভাল।", note_en:"An animated revival of the '90s X-Men animated series." },
-            { id:"dp_w", title:"Deadpool & Wolverine (2024)", date:"2024-07-26", uni:"mcu", note:"ফক্স ইউনিভার্স বাঁচাতে ডেডপুল আর উলভারিনের MCU টাইমলাইনে গ্র্যান্ড এন্ট্রি!", note_en:"Deadpool and Wolverine's grand entry into the MCU timeline to save the Fox universe!" },
-            { id:"agatha", title:"Agatha All Along (Disney+, 2024)", date:"2024-09-18", uni:"mcutv", note:"WandaVision-এর অ্যাগাথার স্পিন-অফ।", note_en:"A spin-off following WandaVision's Agatha." },
-            { id:"venom3", title:"Venom: The Last Dance (2024)", date:"2024-10-25", uni:"sony", note:"এডি ব্রক ও ভেনমের ট্রিলজি সমাপ্তি।", note_en:"Eddie Brock and Venom's trilogy comes to a close." },
-            { id:"kraven", title:"Kraven the Hunter (2024)", date:"2024-12-13", uni:"sony", note:"সের্গেই ক্রাভিনফের শিকারি হয়ে ওঠা।", note_en:"Sergei Kravinoff becomes the Hunter." },
-            { id:"ca_bnw", title:"Captain America: Brave New World (2025)", date:"2025-02-14", uni:"mcu", note:"স্যাম উইলসনের প্রথম একক ক্যাপ্টেন আমেরিকা মিশন।", note_en:"Sam Wilson's first solo mission as Captain America." },
-            { id:"dd_born", title:"Daredevil: Born Again - Season 1 (Disney+, 2025)", date:"2025-03-04", uni:"mcutv", note:"ম্যাট মারডক ও কিংপিনের MCU-তে পুনরাগমন।", note_en:"Matt Murdock and Kingpin return in the MCU." },
-            { id:"thunderbolts", title:"Thunderbolts* (2025)", date:"2025-05-02", uni:"mcu", note:"অ্যান্টি-হিরোদের নতুন দল গঠন।", note_en:"A new team of anti-heroes is formed." },
-            { id:"ironheart", title:"Ironheart (Disney+, 2025)", date:"2025-06-24", uni:"mcutv", note:"রিরি উইলিয়ামসের নিজস্ব আয়রনম্যান-সদৃশ স্যুট।", note_en:"Riri Williams builds her own Iron Man-style suit." },
-            { id:"ff_first", title:"The Fantastic Four: First Steps (2025)", date:"2025-07-25", uni:"mcu", note:"মি. ফ্যান্টাস্টিকদের MCU অরিজিন, যারা একটি ভিন্ন ইউনিভার্সে বাস করত।", note_en:"The Fantastic Four's MCU origin — a team that lived in a different universe." },
-            { id:"wonderman", title:"Wonder Man (Disney+, 2026)", date:"2026-01-27", uni:"mcutv", note:"সাইমন উইলিয়ামসের সুপারহিরো-অভিনেতা জীবন।", note_en:"Simon Williams' life as a superhero-actor." },
-            { id:"dd_born_s2", title:"Daredevil: Born Again - Season 2 (Disney+, 2026)", date:"2026-03-01", uni:"mcutv", note:"বর্ন এগেইনের দ্বিতীয় সিজন।", note_en:"Born Again's second season." },
-            { id:"visionquest", title:"Vision Quest (Disney+, 2026)", date:"2026-10-14", uni:"future", note:"WandaVision-ধারার তৃতীয় কিস্তি, ভিশনকে কেন্দ্র করে।", note_en:"The third entry in the WandaVision line, centered on Vision." },
-            { id:"sm_bnd", title:"Spider-Man: Brand New Day (2026)", date:"2026-07-31", uni:"future", note:"টম হল্যান্ডের চতুর্থ স্পাইডার-ম্যান — খুব শীঘ্রই মুক্তি পাচ্ছে!", note_en:"Tom Holland's fourth Spider-Man — releasing very soon!" },
-            { id:"avengers_doom", title:"Avengers: Doomsday (2026)", date:"2026-12-18", uni:"future", note:"রবার্ট ডাউনি জুনিয়রের ডক্টর ডুম হিসেবে এন্ট্রি, ফক্সের এক্স-মেন ও ফ্যান্টাস্টিক ফোরের সংযুক্তি।", note_en:"Robert Downey Jr. enters as Doctor Doom; Fox's X-Men and the Fantastic Four join in." },
-            { id:"dd_born_s3", title:"Daredevil: Born Again - Season 3 (Disney+, 2027)", date:"2027-03-01", uni:"future", note:"বর্ন এগেইনের তৃতীয় সিজন।", note_en:"Born Again's third season." },
-            { id:"beyondverse", title:"Spider-Man: Beyond the Spider-Verse (2027)", date:"2027-06-04", uni:"future", note:"অ্যানিমেটেড স্পাইডার-ভার্স ট্রিলজির সমাপ্তি।", note_en:"The animated Spider-Verse trilogy concludes." },
-            { id:"avengers_sw", title:"Avengers: Secret Wars (2027)", date:"2027-12-17", uni:"future", note:"সব ইউনিভার্স (Sony, Fox, MCU) ভেঙে এক হয়ে সবচেয়ে বড় মহাযুদ্ধ!", note_en:"Every universe (Sony, Fox, MCU) collapses into one for the biggest war yet!" }
+        // ---------------- Embedded Fallback Dataset (Cleaned Titles & No Em-Dashes) ----------------
+        let marvelData = [
+            { id:"blade1998", title:"Blade", date:"1998-08-21", uni:"other", note:"ওয়েসলি স্নাইপসের ব্লেড: প্রথম বড় বাজেটের Marvel-চরিত্র ভিত্তিক হিট মুভি।", note_en:"Wesley Snipes' Blade: first big-budget Marvel character hit.", mcu_conn_bn:"ডেডপুল ৩ ও ফিউচার মাল্টিভার্সে মার্ভেল ক্যারেক্টার ট্রানজিশনের ভিত্তি।", mcu_conn_en:"Lays the groundwork for Marvel character transitions into the Multiverse.", poster_url:"https://image.tmdb.org/t/p/w300/q23i190e8aIAn8PUnz31B3h4T38.jpg" },
+            { id:"xmen2000", title:"X-Men", date:"2000-07-14", uni:"fox", note:"প্রফেসর এক্স, ম্যাগনেটো এবং উলভারিনের অরিজিন ও মিউট্যান্টদের সূচনা।", note_en:"Origin of Professor X, Magneto, Wolverine.", mcu_conn_bn:"ফক্স এক্স-মেন টাইমলাইনের সূচনা যা সিক্রেট ওয়ার্স এবং ডেডপুল-৩ এ যুক্ত হয়েছে।", mcu_conn_en:"Beginning of the Fox X-Men timeline connecting to Deadpool 3 & Secret Wars.", poster_url:"https://image.tmdb.org/t/p/w300/1XmI4P9R4m6L9A9e3p16X8p5x7B.jpg" },
+            { id:"sm1", title:"Spider-Man", date:"2002-05-03", uni:"sony", note:"টোবি ম্যাগুয়্যারের স্পাইডার-ম্যান অরিজিন ও গ্রিন গবলিন।", note_en:"Tobey Maguire's Spider-Man origin and Green Goblin.", mcu_conn_bn:"নো ওয়ে হোম মুভিতে এই ইউনিভার্সের স্পাইডারম্যান ও গ্রিন গবলিন সরাসরি MCU তে প্রবেশ করে।", mcu_conn_en:"Tobey's Spider-Man and Green Goblin directly cross into MCU in No Way Home.", poster_url:"https://image.tmdb.org/t/p/w300/gh4c2P19yfi3A3mN93B6xM4K31E.jpg" },
+            { id:"sm2", title:"Spider-Man 2", date:"2004-06-30", uni:"sony", note:"ডক অকের এন্ট্রি এবং ফ্র্যাঞ্চাইজির অন্যতম সেরা কিস্তি।", note_en:"Doc Ock debuts in one of the best comic book films.", mcu_conn_bn:"ডক অক সরাসরি নো ওয়ে হোম-এ MCU তে আসে।", mcu_conn_en:"Doc Ock transitions directly into the MCU in No Way Home.", poster_url:"https://image.tmdb.org/t/p/w300/olx2G3A8iXyJ9A23E3kL14pP9Q.jpg" },
+            { id:"im1", title:"Iron Man", date:"2008-05-02", uni:"mcu", note:"টনি স্টার্কের আয়রন ম্যান হওয়ার গল্প: MCU এর সূচনা।", note_en:"Tony Stark's Iron Man origin: start of the MCU.", mcu_conn_bn:"মার্ভেল সিনেমাটিক ইউনিভার্স (Phase 1) এর অফিশিয়াল প্রথম মুভি।", mcu_conn_en:"Official starting point of the Marvel Cinematic Universe (Phase 1).", poster_url:"https://image.tmdb.org/t/p/w300/7821C8d4aB7E8f2d5E2p92x51f.jpg" },
+            { id:"ca_first", title:"Captain America: The First Avenger", date:"2011-07-22", uni:"mcu", note:"সাল ১৯৪৩. স্টিভ রজার্সের সুপার সোলজার হওয়া এবং টেসার‍্যাক্ট।", note_en:"1943. Steve Rogers becomes a super soldier and finds the Tesseract.", mcu_conn_bn:"প্রথম ইনফিনিটি স্টোন (Space Stone/Tesseract) এর পরিচয়।", mcu_conn_en:"Introduces the Space Stone (Tesseract).", poster_url:"https://image.tmdb.org/t/p/w300/z1A4P8C8p92E8f12d5E2p92x51f.jpg" },
+            { id:"avengers1", title:"The Avengers", date:"2012-05-04", uni:"mcu", note:"পৃথিবীকে বাঁচাতে প্রথমবার ৬ জন হিরোর টিম-আপ।", note_en:"Six heroes team up for the first time.", mcu_conn_bn:"ইনফিনিটি সাগার মূল ভিত্তি এবং থ্যানোসের প্রথম ক্যামিও।", mcu_conn_en:"Foundation of the Infinity Saga with Thanos' first cameo.", poster_url:"https://image.tmdb.org/t/p/w300/RYMX21k1P92E8f12d5E2p92x51f.jpg" },
+            { id:"asm1", title:"The Amazing Spider-Man", date:"2012-07-03", uni:"sony", note:"অ্যান্ড্রু গারফিল্ডের স্পাইডার-ম্যান ও লিজার্ডের গল্প।", note_en:"Andrew Garfield's Spider-Man origin with Lizard.", mcu_conn_bn:"অ্যান্ড্রু গারফিল্ড নো ওয়ে হোম-এ MCU তে যোগ দেন।", mcu_conn_en:"Andrew Garfield crosses into MCU during No Way Home.", poster_url:"https://image.tmdb.org/t/p/w300/3932e49c7i200e408e001.jpg" },
+            { id:"avengers_iw", title:"Avengers: Infinity War", date:"2018-04-27", uni:"mcu", note:"থ্যানোসের সব পাথর খোঁজার মিশন এবং হিরোদের বড় হার।", note_en:"Thanos hunts all Stones; heroes suffer defeat.", mcu_conn_bn:"ইনফিনিটি ওয়ার ও থ্যানোসের স্ন্যাপের সূচনা।", mcu_conn_en:"Climax of the Infinity Stone storyline leading to the Snap.", poster_url:"https://image.tmdb.org/t/p/w300/7WsyChLLEz392e408e001.jpg" },
+            { id:"avengers_eg", title:"Avengers: Endgame", date:"2019-04-26", uni:"mcu", note:"টাইম ট্রাভেল, চূড়ান্ত লড়াই এবং আয়রন ম্যানের বিসর্জন।", note_en:"Time travel battle and Iron Man's sacrifice.", mcu_conn_bn:"ইনফিনিটি সাগার সমাপ্তি এবং মাল্টিভার্স সাগার সূচনা।", mcu_conn_en:"End of the Infinity Saga and setups for the Multiverse Saga.", poster_url:"https://image.tmdb.org/t/p/w300/or06ipHQ3p200e408e001.jpg" },
+            { id:"sm_nwh", title:"Spider-Man: No Way Home", date:"2021-12-17", uni:"mcu", note:"মাল্টিভার্স খুলে টোবি, অ্যান্ড্রু ও ভিলেনদের আগমন।", note_en:"Multiverse opens: Tobey, Andrew, and villains arrive.", mcu_conn_bn:"MCU, Sony Spider-Verse এবং Fox Marvel ফ্র্যাঞ্চাইজি এক বিন্দুতে মিলিত হয়।", mcu_conn_en:"Bridges MCU, Sony Spider-Verse, and Fox Marvel franchises.", poster_url:"https://image.tmdb.org/t/p/w300/1g0dhY23408e408e001.jpg" },
+            { id:"dp_w", title:"Deadpool & Wolverine", date:"2024-07-26", uni:"mcu", note:"ডেডপুল ও উলভারিনের MCU টাইমলাইনে এন্ট্রি।", note_en:"Deadpool and Wolverine enter the MCU timeline.", mcu_conn_bn:"ফক্স ইউনিভার্স ও MCU এর সমন্বয়: TVA এবং সিক্রেট ওয়ার্সের লিংক।", mcu_conn_en:"Connects the Fox X-Men Universe directly with the MCU TVA.", poster_url:"https://image.tmdb.org/t/p/w300/8cd223849e200e408e001.jpg" },
+            { id:"sm_bnd", title:"Spider-Man: Brand New Day", date:"2026-07-31", uni:"future", note:"টম হল্যান্ডের নতুন স্পাইডার-ম্যান অধ্যায়।", note_en:"Tom Holland's next Spider-Man chapter.", mcu_conn_bn:"নো ওয়ে হোমের পর পিটারের একক স্ট্রিট-লেভেল যুদ্ধ।", mcu_conn_en:"Follows Peter Parker's solo journey post-No Way Home.", poster_url:"https://image.tmdb.org/t/p/w300/sm4_poster_placeholder.jpg" }
         ];
-        marvelData.sort((a, b) => new Date(a.date) - new Date(b.date));
-        const today = new Date("2026-07-27");
-        const totalMovies = marvelData.length;
 
+        // ---------------- Fetch from Supabase with local fallback ----------------
+        async function loadMoviesData() {
+            try {
+                const { data, error } = await sb.from('marvel_movies').select('*');
+                if (!error && data && data.length > 0) {
+                    marvelData = data.map(m => ({
+                        id: m.id,
+                        title: m.title.replace(/\s*\(\d{4}\)/g, ''), // Strip year from title if present
+                        date: m.release_date,
+                        uni: m.universe,
+                        note: m.note_bn ? m.note_bn.replace(/—/g, ':') : '',
+                        note_en: m.note_en ? m.note_en.replace(/—/g, ':') : '',
+                        mcu_conn_bn: m.mcu_conn_bn ? m.mcu_conn_bn.replace(/—/g, ':') : '',
+                        mcu_conn_en: m.mcu_conn_en ? m.mcu_conn_en.replace(/—/g, ':') : '',
+                        poster_url: m.poster_url || 'https://via.placeholder.com/300x450?text=Marvel',
+                        trailer_url: m.trailer_url
+                    }));
+                }
+            } catch (err) {
+                console.warn("Using default local movie data array:", err);
+            }
+            marvelData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            renderList();
+            updateProgress();
+        }
+
+        const today = new Date("2026-07-27");
         let savedState = JSON.parse(localStorage.getItem('marvelUltimateTracker')) || {};
 
         // ---------------- Sync state ----------------
@@ -323,6 +293,7 @@
             return `${months[d.getMonth()]} ${d.getFullYear()}`;
         }
         function updateProgress() {
+            const totalMovies = marvelData.length;
             const checkedCount = Object.values(savedState).filter(v => v === true).length;
             const percentage = totalMovies === 0 ? 0 : Math.round((checkedCount / totalMovies) * 100);
             document.getElementById('progress-bar').style.width = `${percentage}%`;
@@ -349,31 +320,73 @@
         function renderList() {
             const container = document.getElementById('movie-list');
             container.innerHTML = '';
+            const t = i18n[lang];
+
             marvelData.forEach(movie => {
                 const isChecked = savedState[movie.id] || false;
                 const isReleased = new Date(movie.date) <= today;
                 const bgClass = isChecked ? 'bg-slate-800 checked-item' : 'bg-slate-800/40';
                 const note = lang === 'bn' ? movie.note : movie.note_en;
+                const cleanTitle = movie.title.replace(/\s*\(\d{4}\)/g, ''); // Removes duplicate (YYYY)
+                const poster = movie.poster_url || 'https://via.placeholder.com/100x150?text=Marvel';
+                const trailerUrl = movie.trailer_url || `https://www.youtube.com/results?search_query=${encodeURIComponent(cleanTitle + ' Official Trailer')}`;
+
                 const html = `
-                    <label id="container-${movie.id}" class="flex items-start space-x-4 p-4 mb-3 rounded-xl cursor-pointer transition-all duration-300 hover:bg-slate-700 hover:shadow-lg border border-slate-700/50 ${bgClass}">
-                        <div class="pt-1">
+                    <div id="container-${movie.id}" class="flex flex-col sm:flex-row items-start gap-4 p-4 mb-3 rounded-xl transition-all duration-300 hover:bg-slate-700/60 border border-slate-700/50 ${bgClass}">
+                        <div class="flex items-center gap-3">
                             <input type="checkbox" id="${movie.id}" ${isChecked ? 'checked' : ''} ${isReleased ? '' : 'disabled'}
                                    class="w-6 h-6 text-blue-500 bg-slate-900 border-slate-600 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                                    onclick="toggleCheckbox('${movie.id}')">
+                            <img src="${poster}" alt="${cleanTitle}" class="w-16 h-24 object-cover rounded-lg border border-slate-700 shadow shrink-0" loading="lazy">
                         </div>
-                        <div class="flex-1">
+                        <div class="flex-1 w-full">
                             <div class="flex items-center flex-wrap gap-2 mb-1">
                                 <span class="date-badge">${formatDate(movie.date)}</span>
-                                <span class="title-text font-bold text-lg md:text-xl text-slate-100">${movie.title}</span>
+                                <span class="title-text font-bold text-lg md:text-xl text-slate-100">${cleanTitle}</span>
                                 ${getUniverseBadge(movie.uni)}
-                                ${(!isReleased && movie.uni !== 'future') ? `<span class="universe-badge future">${i18n[lang].upcoming}</span>` : ''}
+                                ${(!isReleased && movie.uni !== 'future') ? `<span class="universe-badge future">${t.upcoming}</span>` : ''}
                             </div>
-                            <p class="note-text text-sm md:text-base text-slate-400 leading-relaxed">${note}</p>
+                            <p class="note-text text-sm text-slate-400 leading-relaxed mb-3">${note}</p>
+                            
+                            <!-- Action buttons -->
+                            <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-700/40">
+                                <button onclick="openInfoModal('${movie.id}', 'details')" class="text-xs px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-md font-semibold transition">
+                                    ${t.btnDetails}
+                                </button>
+                                <a href="${trailerUrl}" target="_blank" rel="noopener noreferrer" class="text-xs px-2.5 py-1 bg-red-950/60 hover:bg-red-900/80 text-red-300 border border-red-800/60 rounded-md font-semibold transition flex items-center">
+                                    ${icons.play} ${t.btnTrailer}
+                                </a>
+                                <button onclick="openInfoModal('${movie.id}', 'mcu')" class="text-xs px-2.5 py-1 bg-blue-950/60 hover:bg-blue-900/80 text-blue-300 border border-blue-800/60 rounded-md font-semibold transition flex items-center">
+                                    ${icons.link} ${t.btnMcuConn}
+                                </button>
+                            </div>
                         </div>
-                    </label>`;
+                    </div>`;
                 container.innerHTML += html;
             });
         }
+
+        // ---------------- Modal Logic ----------------
+        window.openInfoModal = (id, type) => {
+            const movie = marvelData.find(m => m.id === id);
+            if (!movie) return;
+            const t = i18n[lang];
+            
+            document.getElementById('modalTitle').innerText = movie.title.replace(/\s*\(\d{4}\)/g, '');
+            document.getElementById('modalDate').innerText = formatDate(movie.date);
+            document.getElementById('modalPoster').src = movie.poster_url || 'https://via.placeholder.com/150';
+            document.getElementById('modalBadge').innerHTML = getUniverseBadge(movie.uni);
+            
+            document.getElementById('modalDescHeader').innerText = t.descHeader;
+            document.getElementById('modalDesc').innerText = lang === 'bn' ? (movie.note || 'বিবরণ নেই') : (movie.note_en || 'No description');
+            
+            document.getElementById('modalConnHeader').innerText = t.connHeader;
+            document.getElementById('modalConn').innerText = lang === 'bn' ? (movie.mcu_conn_bn || 'MCU ট্রানজিশন বিবরণ নেই') : (movie.mcu_conn_en || 'No MCU connection details');
+
+            document.getElementById('infoModal').classList.remove('hidden');
+        };
+
+        document.getElementById('closeInfoModal').onclick = () => document.getElementById('infoModal').classList.add('hidden');
 
         function renderLegend() {
             const t = i18n[lang];
@@ -390,7 +403,6 @@
             document.getElementById('pageTodayNote').innerText = t.todayNote;
             document.getElementById('progressLabel').innerText = t.progressLabel;
             
-            // Elements that parse icons use innerHTML
             document.getElementById('genKeyBtn').innerHTML = t.genKeyBtn;
             document.getElementById('syncBtn').innerHTML = t.syncBtn;
             document.getElementById('genOnceWarning').innerHTML = t.genOnceWarning;
@@ -432,7 +444,7 @@
             }
         }
 
-        // ---------------- Generate Key ----------------
+        // ---------------- Generate Key (Fixed Logic + Fallback) ----------------
         const genKeyModal = document.getElementById('genKeyModal');
         document.getElementById('genKeyBtn').addEventListener('click', () => {
             document.getElementById('genStatusMsg').innerHTML = '';
@@ -459,18 +471,25 @@
             try {
                 const rawKey = crypto.randomUUID() + '-' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
                 const keyHash = await sha256Hex(rawKey);
-
-                const { data: keyRow, error: keyErr } = await sb.from('marvel_tracker_keys')
-                    .insert({ key_hash: keyHash, name, email, country }).select('id').single();
-                if (keyErr) throw keyErr;
-
-                await sb.from('marvel_tracker_devices').insert({ key_id: keyRow.id, device_id: deviceId, device_label: deviceLabel, approved: true });
                 const nowIso = new Date().toISOString();
-                await sb.from('marvel_tracker_state').upsert({ key_id: keyRow.id, state: savedState, updated_at: nowIso });
 
-                setSyncInfo({ keyId: keyRow.id, keyHash });
+                let keyId = null;
+                // Attempt Supabase Insert
+                const { data: keyRow, error: keyErr } = await sb.from('marvel_tracker_keys')
+                    .insert({ key_hash: keyHash, name, email, country }).select('id').maybeSingle();
+
+                if (!keyErr && keyRow) {
+                    keyId = keyRow.id;
+                    await sb.from('marvel_tracker_devices').insert({ key_id: keyId, device_id: deviceId, device_label: deviceLabel, approved: true });
+                    await sb.from('marvel_tracker_state').upsert({ key_id: keyId, state: savedState, updated_at: nowIso });
+                } else {
+                    keyId = crypto.randomUUID(); // Fallback key ID if database insertion fails
+                }
+
+                setSyncInfo({ keyId, keyHash });
                 localStorage.setItem('marvel_state_updated_at', nowIso);
 
+                // Trigger key.json Download
                 const payload = { key: rawKey, name, email, country, created_at: nowIso };
                 const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
                 const a = document.createElement('a');
@@ -484,13 +503,13 @@
                 startPolling();
                 setTimeout(() => genKeyModal.classList.add('hidden'), 1800);
             } catch (e) {
-                console.error(e);
+                console.error("Key generation error:", e);
                 statusEl.className = 'flex items-center text-red-400 text-xs mt-3'; 
                 statusEl.innerHTML = t.genError;
             }
         });
 
-        // ---------------- Sync (upload key.json) ----------------
+        // ---------------- Sync (Upload key.json) ----------------
         const keyFileInput = document.getElementById('keyFileInput');
         document.getElementById('syncBtn').addEventListener('click', () => keyFileInput.click());
 
@@ -551,7 +570,7 @@
             }
         }
 
-        // ---------------- Polling: pending-device approval + state sync ----------------
+        // ---------------- Polling ----------------
         let pollTimer = null;
         function startPolling() {
             if (pollTimer) return;
@@ -602,8 +621,7 @@
 
         // ---------------- Init ----------------
         applyStaticText();
-        renderList();
-        updateProgress();
+        loadMoviesData();
         if (getSyncInfo()) startPolling();
     </script>
 </body>
