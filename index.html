@@ -23,7 +23,7 @@
         .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0f172a; border-top: 1px solid #334155; z-index: 40; }
         .sync-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         
-        /* Custom Scrollbar for Country List */
+        /* Custom Scrollbar */
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: #0f172a; border-radius: 8px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 8px; }
@@ -99,7 +99,6 @@
                     <p id="emailErrorMsg" class="text-red-400 text-xs mt-1 hidden"></p>
                 </div>
                 
-                <!-- Custom Country Select Box -->
                 <div class="relative">
                     <div id="countryDropdownBtn" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition cursor-pointer flex justify-between items-center">
                         <span id="countrySelectedText" class="text-slate-400"></span>
@@ -109,22 +108,16 @@
                         <div class="p-2 border-b border-slate-700">
                             <input type="text" id="countrySearch" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500">
                         </div>
-                        <ul id="countryList" class="max-h-40 overflow-y-auto custom-scroll text-sm text-slate-300">
-                            <!-- JS injected countries -->
-                        </ul>
+                        <ul id="countryList" class="max-h-40 overflow-y-auto custom-scroll text-sm text-slate-300"></ul>
                     </div>
-                    <p id="countryErrorMsg" class="text-red-400 text-xs mt-1 hidden"></p>
                 </div>
 
                 <!-- Security Puzzle Grid (5x5) -->
                 <div>
                     <p id="puzzleLabelText" class="text-sm font-bold text-slate-300 mb-2 text-center"></p>
-                    <div id="genPuzzleGrid" class="grid grid-cols-5 gap-1.5 w-fit mx-auto p-2.5 bg-slate-950 border border-slate-700 rounded-xl shadow-inner">
-                        <!-- JS injected cells -->
-                    </div>
+                    <div id="genPuzzleGrid" class="grid grid-cols-5 gap-1.5 w-fit mx-auto p-2.5 bg-slate-950 border border-slate-700 rounded-xl shadow-inner"></div>
                     <p id="puzzleErrorMsg" class="text-red-400 text-xs mt-2 text-center hidden"></p>
                 </div>
-
             </div>
             
             <p id="genOnceWarning" class="flex items-start text-amber-400 text-xs mt-5"></p>
@@ -145,9 +138,7 @@
             <h3 id="verifyPuzzleTitle" class="text-xl font-bold text-white mb-2 text-center"></h3>
             <p id="verifyPuzzleDesc" class="text-slate-400 text-xs mb-4 text-center"></p>
             
-            <div id="verifyPuzzleGrid" class="grid grid-cols-5 gap-1.5 w-fit mx-auto p-2.5 bg-slate-950 border border-slate-700 rounded-xl shadow-inner mb-4">
-                <!-- JS injected cells -->
-            </div>
+            <div id="verifyPuzzleGrid" class="grid grid-cols-5 gap-1.5 w-fit mx-auto p-2.5 bg-slate-950 border border-slate-700 rounded-xl shadow-inner mb-4"></div>
 
             <button id="verifyPuzzleSubmitBtn" class="w-full px-4 py-2 bg-blue-700 hover:bg-blue-600 rounded-lg font-bold text-sm text-white transition"></button>
             <p id="verifyPuzzleErrorMsg" class="text-red-400 text-xs mt-2 text-center hidden"></p>
@@ -162,7 +153,12 @@
             </button>
             <h3 id="devModalTitle" class="text-xl font-bold text-white mb-1"></h3>
             <p id="devModalDesc" class="text-slate-400 text-sm mb-4"></p>
-            <div id="deviceListContainer" class="flex-1 overflow-y-auto custom-scroll space-y-3 pr-2"></div>
+            <div id="deviceListContainer" class="flex-1 overflow-y-auto custom-scroll space-y-3 pr-2 mb-4"></div>
+            
+            <div class="border-t border-slate-700 pt-4 mt-auto">
+                <p id="rotateKeyDesc" class="text-xs text-slate-400 mb-2"></p>
+                <button id="rotateKeyBtn" class="w-full px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-lg font-bold text-sm text-amber-950 flex justify-center items-center gap-2 transition"></button>
+            </div>
         </div>
     </div>
 
@@ -204,14 +200,14 @@
             play: `<svg class="w-3.5 h-3.5 inline-block mr-1 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>`,
             link: `<svg class="w-3.5 h-3.5 inline-block mr-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>`,
             device: `<svg class="w-4 h-4 inline-block mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>`,
-            trash: `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`
+            trash: `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`,
+            kick: `<svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>`
         };
 
         const i18n = {
             bn: {
                 title: "মার্ভেল ক্রনোলজিক্যাল ওয়াচলিস্ট",
                 subtitle: "রিলিজ ডেট অনুযায়ী সাজানো: MCU, Sony Spider-Man Universe, Fox X-Men, Netflix ও অ্যানিমেটেড স্পাইডার-ভার্স সব একসাথে।",
-                todayNote: "আজকের তারিখ: ২৭ জুলাই, ২০২৬. যা রিলিজ হয়ে গেছে তা চিহ্নিত, বাকিগুলো আপকামিং ব্যাজ সহ দেখাবে।",
                 progressLabel: "মিশন প্রোগ্রেস",
                 upcoming: "আপকামিং",
                 btnDetails: "ডিটেইলস",
@@ -222,9 +218,11 @@
                 badges: { mcu:"MCU", mcutv:"MCU সিরিজ", sony:"SONY", sonyanim:"SONY অ্যানিমেটেড", fox:"FOX", netflix:"NETFLIX", other:"অন্যান্য" },
                 manageDevBtn: `${icons.device} ম্যানেজ ডিভাইসেস`,
                 devModalTitle: "সিঙ্কড ডিভাইস ম্যানেজার",
-                devModalDesc: "যেকোনো সন্দেহজনক বা পুরোনো ডিভাইস লগ আউট করে দিন।",
+                devModalDesc: "আপনি এখন Owner। যেকোনো সন্দেহজনক বা পুরোনো ডিভাইস কিক আউট (Kick out) করে দিন।",
                 thisDevice: "এই ডিভাইস",
-                removeBtn: "রিমুভ",
+                kickBtn: "কিক আউট",
+                rotateKeyDesc: "আপনার ফাইল অন্য কেউ পেয়ে গেলে, নতুন Master Key বানিয়ে আগের ফাইলটি চিরতরে বাতিল করুন।",
+                rotateKeyBtn: `${icons.key} নতুন Master Key জেনারেট করুন`,
                 genKeyBtn: `${icons.key} কী জেনারেট করুন`,
                 syncBtn: `${icons.sync} সিঙ্ক করুন`,
                 syncedText: (n)=>`সিঙ্কড (${n} ডিভাইস)`,
@@ -251,14 +249,13 @@
                 approveBtn: `${icons.check} অনুমোদন করুন`,
                 denyBtn: `${icons.cross} প্রত্যাখ্যান`,
                 verifyPuzzleTitle: "সিকিউরিটি ভেরিফিকেশন",
-                verifyPuzzleDesc: "ডিভাইস ম্যানেজ করতে আপনার সেট করা সিকিউরিটি পাজল প্যাটার্নটি দিন।",
+                verifyPuzzleDesc: "ডিভাইস ম্যানেজ করতে আপনার সেট করা সিকিউরিটি পাজল প্যাটার্নটি আঁকুন।",
                 verifyPuzzleBtn: "ভেরিফাই করুন",
                 invalidPuzzle: `${icons.cross} পাজল মিলেনি! আবার চেষ্টা করুন।`
             },
             en: {
                 title: "Marvel Chronological Watchlist",
                 subtitle: "Sorted by real release date: MCU, Sony Spider-Man Universe, Fox X-Men, Netflix, and animated Spider-Verse.",
-                todayNote: "Today date: July 27, 2026. Released titles are auto-marked, upcoming items show an Upcoming badge.",
                 progressLabel: "Mission Progress",
                 upcoming: "Upcoming",
                 btnDetails: "Details",
@@ -269,9 +266,11 @@
                 badges: { mcu:"MCU", mcutv:"MCU SERIES", sony:"SONY", sonyanim:"SONY ANIMATED", fox:"FOX", netflix:"NETFLIX", other:"OTHER" },
                 manageDevBtn: `${icons.device} Manage Devices`,
                 devModalTitle: "Synced Device Manager",
-                devModalDesc: "Log out any suspicious or old devices from your sync network.",
+                devModalDesc: "You are now Owner. Kick out any suspicious or old devices from your sync network.",
                 thisDevice: "This Device",
-                removeBtn: "Remove",
+                kickBtn: "Kick out",
+                rotateKeyDesc: "If someone has your file, generate a new Master Key to invalidate the old file permanently.",
+                rotateKeyBtn: `${icons.key} Generate New Master Key`,
                 genKeyBtn: `${icons.key} Generate Key`,
                 syncBtn: `${icons.sync} Sync`,
                 syncedText: (n)=>`Synced (${n} devices)`,
@@ -310,8 +309,18 @@
         
         let lang = localStorage.getItem('marvel_lang') || 'bn';
         let marvelData = [];
-        const today = new Date("2026-07-27");
+        const today = new Date();
         let savedState = JSON.parse(localStorage.getItem('marvelUltimateTracker')) || {};
+
+        function getDynamicDateString() {
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const formattedDate = today.toLocaleDateString(lang === 'bn' ? 'bn-BD' : 'en-US', options);
+            if(lang === 'bn') {
+                return `আজকের তারিখ: ${formattedDate}. যা রিলিজ হয়ে গেছে তা চিহ্নিত, বাকিগুলো "আপকামিং" ব্যাজ সহ দেখাবে।`;
+            } else {
+                return `Today's date: ${formattedDate}. Released titles are auto-marked, upcoming items show an "Upcoming" badge.`;
+            }
+        }
 
         async function loadMoviesData() {
             try {
@@ -500,12 +509,14 @@
             document.title = t.title;
             document.getElementById('pageTitle').innerText = t.title;
             document.getElementById('pageSubtitle').innerText = t.subtitle;
-            document.getElementById('pageTodayNote').innerText = t.todayNote;
+            document.getElementById('pageTodayNote').innerText = getDynamicDateString();
             document.getElementById('progressLabel').innerText = t.progressLabel;
             
             document.getElementById('manageDevBtn').innerHTML = t.manageDevBtn;
             document.getElementById('devModalTitle').innerText = t.devModalTitle;
             document.getElementById('devModalDesc').innerText = t.devModalDesc;
+            document.getElementById('rotateKeyDesc').innerText = t.rotateKeyDesc;
+            document.getElementById('rotateKeyBtn').innerHTML = t.rotateKeyBtn;
 
             document.getElementById('genKeyBtn').innerHTML = t.genKeyBtn;
             document.getElementById('syncBtn').innerHTML = t.syncBtn;
@@ -616,7 +627,6 @@
                 const cell = document.createElement('div');
                 cell.className = "w-10 h-10 md:w-12 md:h-12 rounded bg-slate-800 border border-slate-600 cursor-pointer transition-all duration-200";
                 
-                // Set initial visual state if reopening
                 if(stateArray[i] === 1) {
                     cell.classList.remove('bg-slate-800', 'border-slate-600');
                     cell.classList.add('bg-blue-600', 'border-blue-400', 'shadow-[0_0_12px_rgba(37,99,235,0.8)]', 'scale-105');
@@ -652,7 +662,6 @@
             const t = i18n[lang];
             let isValid = true;
 
-            // Name check
             const nameVal = genName.value.trim();
             if (nameVal !== "" && !nameRegex.test(nameVal)) {
                 nameError.innerHTML = t.invalidName;
@@ -663,7 +672,6 @@
                 if(nameVal === "") isValid = false;
             }
 
-            // Email check
             const emailVal = genEmail.value.trim();
             if (emailVal !== "" && !emailRegex.test(emailVal)) {
                 emailError.innerHTML = t.invalidEmail;
@@ -674,10 +682,8 @@
                 if(emailVal === "") isValid = false;
             }
 
-            // Country check
             if(!selectedCountry) isValid = false;
 
-            // Puzzle check
             if(!genPuzzleState.includes(1)) {
                 puzzleError.innerHTML = t.puzzleEmpty;
                 puzzleError.classList.remove('hidden');
@@ -686,7 +692,6 @@
                 puzzleError.classList.add('hidden');
             }
 
-            // Enable/Disable button
             if(isValid) {
                 submitBtn.disabled = false;
             } else {
@@ -717,10 +722,9 @@
             const name = genName.value.trim();
             const email = genEmail.value.trim();
             const country = selectedCountry;
-            const puzzleString = genPuzzleState.join(''); // e.g. "00101110..."
+            const puzzleString = genPuzzleState.join('');
             const statusEl = document.getElementById('genStatusMsg');
             
-            // Fallback checking
             if (!nameRegex.test(name) || !emailRegex.test(email) || !country || !genPuzzleState.includes(1)) return;
             
             statusEl.className = 'flex items-center text-slate-400 text-xs mt-3 justify-center'; 
@@ -843,7 +847,7 @@
                 puzzleErrorMsg.innerHTML = t.invalidPuzzle;
                 puzzleErrorMsg.classList.remove('hidden');
                 verifyPuzzleState.fill(0);
-                renderPuzzleGrid('verifyPuzzleGrid', verifyPuzzleState, false); // Reset visually
+                renderPuzzleGrid('verifyPuzzleGrid', verifyPuzzleState, false);
             }
         });
 
@@ -868,8 +872,8 @@
                                 <p class="text-slate-400 text-xs">Last active: ${dateStr}</p>
                             </div>
                             ${!isMe ? `
-                                <button onclick="removeDevice('${dev.id}')" class="text-xs text-red-400 hover:text-white hover:bg-red-800 px-3 py-1.5 rounded bg-slate-900 border border-red-900/50 transition">
-                                    ${icons.trash} ${t.removeBtn}
+                                <button onclick="removeDevice('${dev.id}')" class="text-xs text-red-400 hover:text-white hover:bg-red-800 px-3 py-1.5 rounded bg-slate-900 border border-red-900/50 transition flex items-center">
+                                    ${icons.kick} ${t.kickBtn}
                                 </button>
                             ` : ''}
                         </div>
@@ -882,6 +886,49 @@
             await sb.from('marvel_tracker_devices').delete().eq('id', dbId);
             await loadDevices(); 
         };
+        
+        document.getElementById('rotateKeyBtn').addEventListener('click', async () => {
+            const info = getSyncInfo();
+            if (!info) return;
+            const t = i18n[lang];
+            
+            const btn = document.getElementById('rotateKeyBtn');
+            btn.innerHTML = `${icons.sync} ${t.genWorking}`;
+            
+            try {
+                const rawKey = crypto.randomUUID() + 'R' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
+                const keyHash = await sha256Hex(rawKey);
+                
+                await sb.from('marvel_tracker_keys').update({ key_hash: keyHash }).eq('id', info.keyId);
+                
+                setSyncInfo({ keyId: info.keyId, keyHash: keyHash });
+                
+                const { data: keyData } = await sb.from('marvel_tracker_keys').select('name, email, country').eq('id', info.keyId).single();
+                
+                const payload = { 
+                    key: rawKey, 
+                    name: keyData?.name || 'Rotated User', 
+                    email: keyData?.email || '', 
+                    country: keyData?.country || '', 
+                    created_at: new Date().toISOString() 
+                };
+                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'marvel-rotated-key.json';
+                document.body.appendChild(a); a.click(); a.remove();
+
+                btn.innerHTML = `${icons.check} Success!`;
+                setTimeout(() => {
+                    btn.innerHTML = t.rotateKeyBtn;
+                    devModal.classList.add('hidden');
+                }, 2000);
+
+            } catch(e) {
+                console.error(e);
+                btn.innerHTML = `${icons.cross} Error`;
+            }
+        });
 
         // ---------------- State Sync & Polling ----------------
         async function pullAndMergeState(keyId) {
@@ -928,7 +975,7 @@
                 const { data: myDevice } = await sb.from('marvel_tracker_devices').select('*').eq('key_id', info.keyId).eq('device_id', deviceId).maybeSingle();
                 if (!myDevice) {
                     localStorage.removeItem('marvel_sync_info');
-                    alert("You have been logged out from another device.");
+                    alert("You have been kicked out from the sync network.");
                     location.reload();
                     return;
                 }
