@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মার্ভেল ক্রনোলজিক্যাল ওয়াচলিস্ট</title>
+    <title>মার্ভেল ক্রনোলজিক্যাল ওয়াচলিস্ট</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0b0f19; color: #e2e8f0; padding-bottom: 90px; }
@@ -86,6 +86,7 @@
                 <input id="genName" type="text" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
                 <input id="genEmail" type="email" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
                 <input id="genCountry" type="text" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                <input id="genPuzzle" type="password" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
             </div>
             <p id="genOnceWarning" class="flex items-start text-amber-400 text-xs mt-3"></p>
             <div class="flex gap-3 mt-5">
@@ -93,6 +94,20 @@
                 <button id="genCancelBtn" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold text-sm text-white"></button>
             </div>
             <p id="genStatusMsg" class="flex items-center text-xs mt-3"></p>
+        </div>
+    </div>
+
+    <!-- Puzzle Prompt Modal (For Security Verification) -->
+    <div id="puzzlePromptModal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-sm w-full shadow-2xl relative">
+            <button id="closePuzzleModal" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 p-1 rounded-full border border-slate-600 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 id="puzzleModalTitle" class="text-xl font-bold text-white mb-2"></h3>
+            <p id="puzzleModalDesc" class="text-slate-400 text-sm mb-4"></p>
+            <input id="puzzleInput" type="password" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 mb-3">
+            <button id="puzzleSubmitBtn" class="w-full px-4 py-2 bg-blue-700 hover:bg-blue-600 rounded-lg font-bold text-sm text-white transition"></button>
+            <p id="puzzleErrorMsg" class="text-red-400 text-xs mt-2 hidden"></p>
         </div>
     </div>
 
@@ -105,14 +120,8 @@
             <h3 id="devModalTitle" class="text-xl font-bold text-white mb-1"></h3>
             <p id="devModalDesc" class="text-slate-400 text-sm mb-4"></p>
             
-            <div id="deviceListContainer" class="flex-1 overflow-y-auto space-y-3 mb-4 pr-1">
+            <div id="deviceListContainer" class="flex-1 overflow-y-auto space-y-3 pr-1">
                 <!-- Devices will load here -->
-            </div>
-
-            <div class="border-t border-slate-700 pt-4 mt-auto">
-                <p id="rotateKeyDesc" class="text-xs text-slate-400 mb-2"></p>
-                <button id="rotateKeyBtn" class="w-full px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-lg font-bold text-sm text-amber-950 flex justify-center items-center gap-2 transition">
-                </button>
             </div>
         </div>
     </div>
@@ -160,9 +169,9 @@
 
         const i18n = {
             bn: {
-                title: "মার্ভেল ক্রনোলজিক্যাল ওয়াচলিস্ট",
-                subtitle: "রিলিজ ডেট অনুযায়ী সাজানো: MCU, Sony Spider-Man Universe, Fox X-Men, Netflix ও অ্যানিমেটেড স্পাইডার-ভার্স সব একসাথে।",
-                todayNote: "আজকের তারিখ: ২৭ জুলাই, ২০২৬. যা রিলিজ হয়ে গেছে তা চিহ্নিত, বাকিগুলো আপকামিং ব্যাজ সহ দেখাবে।",
+                title: "মার্ভেল ক্রনোলজিক্যাল ওয়াচলিস্ট",
+                subtitle: "রিলিজ ডেট অনুযায়ী সাজানো: MCU, Sony Spider-Man Universe, Fox X-Men, Netflix ও অ্যানিমেটেড স্পাইডার-ভার্স সব একসাথে।",
+                todayNote: "আজকের তারিখ: ২৭ জুলাই, ২০২৬. যা রিলিজ হয়ে গেছে তা চিহ্নিত, বাকিগুলো আপকামিং ব্যাজ সহ দেখাবে।",
                 progressLabel: "মিশন প্রোগ্রেস",
                 upcoming: "আপকামিং",
                 btnDetails: "ডিটেইলস",
@@ -176,28 +185,32 @@
                 devModalDesc: "যেকোনো সন্দেহজনক বা পুরোনো ডিভাইস লগ আউট করে দিন।",
                 thisDevice: "এই ডিভাইস",
                 removeBtn: "রিমুভ",
-                rotateKeyDesc: "ফাইল লিক হলে বা হারিয়ে গেলে পুরনো ফাইলটি বাতিল করে নতুন Master Key জেনারেট করুন।",
-                rotateKeyBtn: `${icons.key} নতুন Master Key তৈরি করুন`,
                 genKeyBtn: `${icons.key} কী জেনারেট করুন`,
                 syncBtn: `${icons.sync} সিঙ্ক করুন`,
                 syncedText: (n)=>`সিঙ্কড (${n} ডিভাইস)`,
                 notSyncedText: "সিঙ্ক করা নেই: লোকাল ব্রাউজারে সেভ হচ্ছে",
                 genModalTitle: "নতুন সিঙ্ক-কী তৈরি করুন",
-                genModalDesc: "নাম, ইমেইল ও দেশ দিন। এই তথ্য দিয়ে একটি ইউনিক কী তৈরি হবে যা key.json ফাইল হিসেবে মাত্র একবার ডাউনলোড করা যাবে।",
-                namePh: "আপনার নাম", emailPh: "ইমেইল", countryPh: "দেশ",
-                genOnceWarning: `${icons.warning} <span>কী শুধু একবারই ডাউনলোড হবে। ফাইলটি নিরাপদ জায়গায় রাখুন।</span>`,
+                genModalDesc: "নাম, ইমেইল ও দেশ দিন। এই তথ্য দিয়ে একটি ইউনিক কী তৈরি হবে যা key.json ফাইল হিসেবে মাত্র একবার ডাউনলোড করা যাবে।",
+                namePh: "আপনার নাম", emailPh: "ইমেইল", countryPh: "দেশ", genPuzzlePh: "সিকিউরিটি পাজল (PIN/Password)",
+                genOnceWarning: `${icons.warning} <span>কী শুধু একবারই ডাউনলোড হবে। ফাইলটি নিরাপদ জায়গায় রাখুন।</span>`,
                 genSubmit: "জেনারেট ও ডাউনলোড করুন",
                 genCancel: "বাতিল",
-                genMissing: `${icons.warning} নাম, ইমেইল ও দেশ: সবগুলো পূরণ করুন।`,
+                genMissing: `${icons.warning} নাম, ইমেইল, দেশ ও পাজল: সবগুলো পূরণ করুন।`,
+                invalidName: `${icons.warning} নাম শুধুমাত্র ইংরেজি অক্ষরে হতে হবে।`,
+                invalidEmail: `${icons.warning} সঠিক ইমেইল দিন (যেমন: @gmail.com, @outlook.com)।`,
                 genWorking: `${icons.sync} প্রসেসিং হচ্ছে...`,
-                genDone: `${icons.check} সফল হয়েছে এবং ফাইল ডাউনলোড হয়েছে!`,
-                genError: `${icons.cross} সমস্যা হয়েছে। আবার চেষ্টা করুন।`,
+                genDone: `${icons.check} সফল হয়েছে এবং ফাইল ডাউনলোড হয়েছে!`,
+                genError: `${icons.cross} সমস্যা হয়েছে। আবার চেষ্টা করুন।`,
                 syncInvalidKey: "এই কী-টি ভ্যালিড না। ফাইলটি চেক করুন।",
-                syncWaitingApproval: "অন্য ডিভাইসে অনুমোদনের অপেক্ষায় আছে। সেই ডিভাইসে ব্রাউজার খুলে অনুমোদন করুন।",
-                syncApprovedNow: "ডিভাইস অনুমোদিত হয়েছে, সিঙ্ক সফল!",
-                approvalBannerText: (label)=>`${icons.info} <span>একটি নতুন ডিভাইস (${label}) আপনার কী দিয়ে সিঙ্ক করতে চাইছে। এটা কি আপনি?</span>`,
+                syncWaitingApproval: "অন্য ডিভাইসে অনুমোদনের অপেক্ষায় আছে। সেই ডিভাইসে ব্রাউজার খুলে অনুমোদন করুন।",
+                syncApprovedNow: "ডিভাইস অনুমোদিত হয়েছে, সিঙ্ক সফল!",
+                approvalBannerText: (label)=>`${icons.info} <span>একটি নতুন ডিভাইস (${label}) আপনার কী দিয়ে সিঙ্ক করতে চাইছে। এটা কি আপনি?</span>`,
                 approveBtn: `${icons.check} অনুমোদন করুন`,
-                denyBtn: `${icons.cross} প্রত্যাখ্যান`
+                denyBtn: `${icons.cross} প্রত্যাখ্যান`,
+                puzzlePromptTitle: "সিকিউরিটি ভেরিফিকেশন",
+                puzzlePromptDesc: "ডিভাইস ম্যানেজ করতে আপনার সেট করা সিকিউরিটি পাজলটি দিন।",
+                puzzlePromptBtn: "ভেরিফাই করুন",
+                invalidPuzzle: "পাজল মিলেনি! আবার চেষ্টা করুন।"
             },
             en: {
                 title: "Marvel Chronological Watchlist",
@@ -216,19 +229,19 @@
                 devModalDesc: "Log out any suspicious or old devices from your sync network.",
                 thisDevice: "This Device",
                 removeBtn: "Remove",
-                rotateKeyDesc: "If your file is leaked or lost, generate a new Master Key to invalidate the old file.",
-                rotateKeyBtn: `${icons.key} Generate New Master Key`,
                 genKeyBtn: `${icons.key} Generate Key`,
                 syncBtn: `${icons.sync} Sync`,
                 syncedText: (n)=>`Synced (${n} devices)`,
                 notSyncedText: "Not synced: saving to this browser only",
                 genModalTitle: "Create a new sync key",
                 genModalDesc: "Enter your info. We will generate a unique key downloadable once as key.json.",
-                namePh: "Your name", emailPh: "Email", countryPh: "Country",
+                namePh: "Your name", emailPh: "Email", countryPh: "Country", genPuzzlePh: "Security Puzzle (PIN/Password)",
                 genOnceWarning: `${icons.warning} <span>The key can only be downloaded once. Keep the file safe.</span>`,
                 genSubmit: "Generate & Download",
                 genCancel: "Cancel",
-                genMissing: `${icons.warning} Please fill in name, email and country.`,
+                genMissing: `${icons.warning} Please fill in name, email, country, and puzzle.`,
+                invalidName: `${icons.warning} Name can only contain letters.`,
+                invalidEmail: `${icons.warning} Use a valid email (e.g., @gmail.com, @outlook.com).`,
                 genWorking: `${icons.sync} Processing...`,
                 genDone: `${icons.check} Success and downloaded!`,
                 genError: `${icons.cross} Something went wrong. Please try again.`,
@@ -237,9 +250,14 @@
                 syncApprovedNow: "Device approved and synced!",
                 approvalBannerText: (label)=>`${icons.info} <span>A new device (${label}) is trying to sync using your key. Is this you?</span>`,
                 approveBtn: `${icons.check} Approve`,
-                denyBtn: `${icons.cross} Deny`
+                denyBtn: `${icons.cross} Deny`,
+                puzzlePromptTitle: "Security Verification",
+                puzzlePromptDesc: "Enter the security puzzle you set to manage devices.",
+                puzzlePromptBtn: "Verify",
+                invalidPuzzle: "Incorrect puzzle! Try again."
             }
         };
+        
         let lang = localStorage.getItem('marvel_lang') || 'bn';
         let marvelData = [];
         const today = new Date("2026-07-27");
@@ -270,7 +288,6 @@
             updateProgress();
         }
 
-        // Generate precise OS and Browser string (Since exact phone name is restricted by browsers)
         function getDeviceName() {
             const ua = navigator.userAgent;
             let os = "Unknown OS";
@@ -302,6 +319,7 @@
             return raw ? JSON.parse(raw) : null;
         }
         function setSyncInfo(info) { localStorage.setItem('marvel_sync_info', JSON.stringify(info)); }
+        
         async function sha256Hex(text) {
             const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
             return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
@@ -413,7 +431,7 @@
             } else if (type === 'mcu') {
                 sectionHeader.innerText = t.connHeader;
                 sectionHeader.className = "font-bold text-blue-400 mb-2 text-lg uppercase tracking-wide";
-                sectionContent.innerText = lang === 'bn' ? (movie.mcu_conn_bn || 'MCU ডেটাবেসে যুক্ত করা হয়নি') : (movie.mcu_conn_en || 'MCU connection data not found');
+                sectionContent.innerText = lang === 'bn' ? (movie.mcu_conn_bn || 'MCU ডেটাবেসে যুক্ত করা হয়নি') : (movie.mcu_conn_en || 'MCU connection data not found');
             }
 
             document.getElementById('infoModal').classList.remove('hidden');
@@ -439,8 +457,6 @@
             document.getElementById('manageDevBtn').innerHTML = t.manageDevBtn;
             document.getElementById('devModalTitle').innerText = t.devModalTitle;
             document.getElementById('devModalDesc').innerText = t.devModalDesc;
-            document.getElementById('rotateKeyDesc').innerText = t.rotateKeyDesc;
-            document.getElementById('rotateKeyBtn').innerHTML = t.rotateKeyBtn;
 
             document.getElementById('genKeyBtn').innerHTML = t.genKeyBtn;
             document.getElementById('syncBtn').innerHTML = t.syncBtn;
@@ -453,8 +469,13 @@
             document.getElementById('genName').placeholder = t.namePh;
             document.getElementById('genEmail').placeholder = t.emailPh;
             document.getElementById('genCountry').placeholder = t.countryPh;
+            document.getElementById('genPuzzle').placeholder = t.genPuzzlePh;
             document.getElementById('genSubmitBtn').innerText = t.genSubmit;
             document.getElementById('genCancelBtn').innerText = t.genCancel;
+
+            document.getElementById('puzzleModalTitle').innerText = t.puzzlePromptTitle;
+            document.getElementById('puzzleModalDesc').innerText = t.puzzlePromptDesc;
+            document.getElementById('puzzleSubmitBtn').innerText = t.puzzlePromptBtn;
             
             renderLegend();
             updateSyncStatusUI();
@@ -501,11 +522,29 @@
             const name = document.getElementById('genName').value.trim();
             const email = document.getElementById('genEmail').value.trim();
             const country = document.getElementById('genCountry').value.trim();
+            const puzzle = document.getElementById('genPuzzle').value.trim();
             const statusEl = document.getElementById('genStatusMsg');
             
-            if (!name || !email || !country) { 
+            // Validate all inputs are present
+            if (!name || !email || !country || !puzzle) { 
                 statusEl.className = 'flex items-center text-red-400 text-xs mt-3'; 
                 statusEl.innerHTML = t.genMissing; 
+                return; 
+            }
+
+            // Regex for Letters Only in Name
+            const nameRegex = /^[A-Za-z\s]+$/;
+            if (!nameRegex.test(name)) {
+                statusEl.className = 'flex items-center text-red-400 text-xs mt-3'; 
+                statusEl.innerHTML = t.invalidName; 
+                return; 
+            }
+
+            // Regex for Supported Emails (Gmail, Outlook, Hotmail, Yahoo, iCloud)
+            const emailRegex = /^[^\s@]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com|icloud\.com)$/i;
+            if (!emailRegex.test(email)) {
+                statusEl.className = 'flex items-center text-red-400 text-xs mt-3'; 
+                statusEl.innerHTML = t.invalidEmail; 
                 return; 
             }
             
@@ -515,6 +554,7 @@
             try {
                 const rawKey = crypto.randomUUID() + 'x' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
                 const keyHash = await sha256Hex(rawKey);
+                const hashedPuzzle = await sha256Hex(puzzle);
                 const nowIso = new Date().toISOString();
 
                 const { data: keyRow, error: keyErr } = await sb.from('marvel_tracker_keys')
@@ -522,6 +562,9 @@
                 if (keyErr) throw keyErr;
 
                 await sb.from('marvel_tracker_devices').insert({ key_id: keyRow.id, device_id: deviceId, device_label: deviceLabel, approved: true });
+                
+                // Embed hashed puzzle safely in the syncing state object
+                savedState['__security_puzzle_hash'] = hashedPuzzle;
                 await sb.from('marvel_tracker_state').upsert({ key_id: keyRow.id, state: savedState, updated_at: nowIso });
 
                 setSyncInfo({ keyId: keyRow.id, keyHash });
@@ -589,15 +632,46 @@
             }
         });
 
-        // ---------------- Device Manager & Rotate Key ----------------
+        // ---------------- Security Puzzle Prompt & Device Manager ----------------
         const devModal = document.getElementById('deviceManagerModal');
         const devListContainer = document.getElementById('deviceListContainer');
+        const puzzlePromptModal = document.getElementById('puzzlePromptModal');
+        const puzzleInput = document.getElementById('puzzleInput');
+        const puzzleErrorMsg = document.getElementById('puzzleErrorMsg');
 
         document.getElementById('manageDevBtn').addEventListener('click', async () => {
-            devModal.classList.remove('hidden');
-            await loadDevices();
+            puzzleInput.value = '';
+            puzzleErrorMsg.classList.add('hidden');
+            
+            // Backwards compatibility: If this key was generated before the puzzle update, let them in.
+            if (!savedState['__security_puzzle_hash']) {
+                devModal.classList.remove('hidden');
+                await loadDevices();
+            } else {
+                puzzlePromptModal.classList.remove('hidden');
+            }
         });
+
+        document.getElementById('closePuzzleModal').addEventListener('click', () => puzzlePromptModal.classList.add('hidden'));
         document.getElementById('closeDeviceModal').addEventListener('click', () => devModal.classList.add('hidden'));
+
+        document.getElementById('puzzleSubmitBtn').addEventListener('click', async () => {
+            const t = i18n[lang];
+            const enteredPuzzle = puzzleInput.value.trim();
+            if(!enteredPuzzle) return;
+
+            const hashedEntered = await sha256Hex(enteredPuzzle);
+            
+            // Verify hash against the one securely stored in the sync state
+            if (savedState['__security_puzzle_hash'] === hashedEntered) {
+                puzzlePromptModal.classList.add('hidden');
+                devModal.classList.remove('hidden');
+                await loadDevices();
+            } else {
+                puzzleErrorMsg.innerText = t.invalidPuzzle;
+                puzzleErrorMsg.classList.remove('hidden');
+            }
+        });
 
         async function loadDevices() {
             const info = getSyncInfo();
@@ -634,53 +708,6 @@
             await sb.from('marvel_tracker_devices').delete().eq('id', dbId);
             await loadDevices(); // refresh list
         };
-
-        document.getElementById('rotateKeyBtn').addEventListener('click', async () => {
-            const info = getSyncInfo();
-            if (!info) return;
-            const t = i18n[lang];
-            
-            const btn = document.getElementById('rotateKeyBtn');
-            btn.innerHTML = `${icons.sync} ${t.genWorking}`;
-            
-            try {
-                // Generate completely new hash
-                const rawKey = crypto.randomUUID() + 'R' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
-                const keyHash = await sha256Hex(rawKey);
-                
-                // Update master key in DB
-                await sb.from('marvel_tracker_keys').update({ key_hash: keyHash }).eq('id', info.keyId);
-                
-                // Update local storage so this device stays synced
-                setSyncInfo({ keyId: info.keyId, keyHash: keyHash });
-                
-                // Trigger Download
-                const { data: keyData } = await sb.from('marvel_tracker_keys').select('name, email, country').eq('id', info.keyId).single();
-                
-                const payload = { 
-                    key: rawKey, 
-                    name: keyData?.name || 'Rotated User', 
-                    email: keyData?.email || '', 
-                    country: keyData?.country || '', 
-                    created_at: new Date().toISOString() 
-                };
-                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = 'marvel-rotated-key.json';
-                document.body.appendChild(a); a.click(); a.remove();
-
-                btn.innerHTML = `${icons.check} Success!`;
-                setTimeout(() => {
-                    btn.innerHTML = t.rotateKeyBtn;
-                    devModal.classList.add('hidden');
-                }, 2000);
-
-            } catch(e) {
-                console.error(e);
-                btn.innerHTML = `${icons.cross} Error`;
-            }
-        });
 
         // ---------------- State Sync & Polling ----------------
         async function pullAndMergeState(keyId) {
