@@ -301,7 +301,8 @@
                 const isReleased = new Date(movie.date) <= today;
                 const bgClass = isChecked ? 'bg-slate-800 checked-item' : 'bg-slate-800/40';
                 const note = lang === 'bn' ? movie.note_bn : movie.note_en;
-                const poster = movie.poster_url;
+                // Poster Fallback Logic added here!
+                const poster = movie.poster_url || `https://placehold.co/300x450/0f172a/475569?text=${encodeURIComponent(movie.title)}`;
                 const trailerUrl = movie.trailer_url || `https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title + ' Official Trailer')}`;
 
                 const html = `
@@ -310,7 +311,7 @@
                             <input type="checkbox" id="${movie.id}" ${isChecked ? 'checked' : ''} ${isReleased ? '' : 'disabled'}
                                    class="w-7 h-7 text-blue-500 bg-slate-900 border-slate-600 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                                    onclick="toggleCheckbox('${movie.id}')">
-                            <img src="${poster}" alt="${movie.title}" class="w-20 h-32 object-cover rounded-lg border border-slate-700 shadow-md shrink-0" loading="lazy">
+                            <img src="${poster}" onerror="this.onerror=null; this.src='https://placehold.co/300x450/0f172a/475569?text=${encodeURIComponent(movie.title)}';" alt="${movie.title}" class="w-20 h-32 object-cover rounded-lg border border-slate-700 shadow-md shrink-0" loading="lazy">
                         </div>
                         <div class="flex-1 w-full pt-1">
                             <div class="flex items-center flex-wrap gap-2 mb-2">
