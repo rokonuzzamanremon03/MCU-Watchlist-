@@ -61,6 +61,7 @@
         <div id="movie-list" class="space-y-4"></div>
     </div>
 
+    <!-- Footer sync bar -->
     <div class="footer-bar p-3 md:p-4">
         <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-2 text-xs md:text-sm text-slate-400">
@@ -68,6 +69,7 @@
                 <span id="syncStatusText"></span>
             </div>
             <div class="flex gap-2">
+                <button id="manageDevicesBtn" class="hidden items-center px-3 py-2 md:px-4 md:py-2 bg-blue-900 hover:bg-blue-800 border border-blue-700 rounded-lg text-xs md:text-sm font-bold text-white"></button>
                 <button id="genKeyBtn" class="flex items-center px-3 py-2 md:px-4 md:py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs md:text-sm font-bold"></button>
                 <button id="syncBtn" class="flex items-center px-3 py-2 md:px-4 md:py-2 bg-red-700 hover:bg-red-600 rounded-lg text-xs md:text-sm font-bold"></button>
                 <input type="file" id="keyFileInput" accept=".json" class="hidden">
@@ -77,7 +79,7 @@
 
     <!-- Generate Key Modal -->
     <div id="genKeyModal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-md w-full">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-md w-full shadow-2xl">
             <h3 id="genModalTitle" class="text-xl font-bold text-white mb-1"></h3>
             <p id="genModalDesc" class="text-slate-400 text-sm mb-4"></p>
             <div class="space-y-3">
@@ -94,7 +96,28 @@
         </div>
     </div>
 
-    <!-- Dynamic Info / MCU Connect Modal -->
+    <!-- Device Manager Modal -->
+    <div id="deviceManagerModal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-lg w-full shadow-2xl relative max-h-[90vh] flex flex-col">
+            <button id="closeDeviceModal" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 p-1 rounded-full border border-slate-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 id="devModalTitle" class="text-xl font-bold text-white mb-1"></h3>
+            <p id="devModalDesc" class="text-slate-400 text-sm mb-4"></p>
+            
+            <div id="deviceListContainer" class="flex-1 overflow-y-auto space-y-3 mb-4 pr-1">
+                <!-- Devices will load here -->
+            </div>
+
+            <div class="border-t border-slate-700 pt-4 mt-auto">
+                <p id="rotateKeyDesc" class="text-xs text-slate-400 mb-2"></p>
+                <button id="rotateKeyBtn" class="w-full px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-lg font-bold text-sm text-amber-950 flex justify-center items-center gap-2 transition">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
     <div id="infoModal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
         <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-lg w-full relative max-h-[90vh] overflow-y-auto shadow-2xl shadow-blue-900/20">
             <button id="closeInfoModal" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 p-1 rounded-full border border-slate-600">
@@ -122,16 +145,17 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbmRmZmhyamJzandqb2h5cmV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3OTk4NjUsImV4cCI6MjA5NjM3NTg2NX0.sdvw05kdbVGukuT4twFirXfGx9RLcpWQ_GxR8KXa1oc';
         const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ---------------- SVGs ----------------
         const icons = {
-            key: `<svg class="w-4 h-4 inline-block mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>`,
-            sync: `<svg class="w-4 h-4 inline-block mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>`,
-            check: `<svg class="w-4 h-4 inline-block mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`,
-            cross: `<svg class="w-4 h-4 inline-block mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`,
+            key: `<svg class="w-4 h-4 inline-block mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>`,
+            sync: `<svg class="w-4 h-4 inline-block mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>`,
+            check: `<svg class="w-4 h-4 inline-block mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`,
+            cross: `<svg class="w-4 h-4 inline-block mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`,
             warning: `<svg class="w-4 h-4 inline-block mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`,
             info: `<svg class="w-4 h-4 inline-block mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
-            play: `<svg class="w-3.5 h-3.5 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>`,
-            link: `<svg class="w-3.5 h-3.5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>`
+            play: `<svg class="w-3.5 h-3.5 inline-block mr-1 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>`,
+            link: `<svg class="w-3.5 h-3.5 inline-block mr-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>`,
+            device: `<svg class="w-4 h-4 inline-block mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>`,
+            trash: `<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`
         };
 
         const i18n = {
@@ -147,6 +171,13 @@
                 descHeader: "মুভির বিবরণ",
                 connHeader: "মাল্টিভার্স ও MCU কানেকশন",
                 badges: { mcu:"MCU", mcutv:"MCU সিরিজ", sony:"SONY", sonyanim:"SONY অ্যানিমেটেড", fox:"FOX", netflix:"NETFLIX", other:"অন্যান্য" },
+                manageDevBtn: `${icons.device} ম্যানেজ ডিভাইসেস`,
+                devModalTitle: "সিঙ্কড ডিভাইস ম্যানেজার",
+                devModalDesc: "যেকোনো সন্দেহজনক বা পুরোনো ডিভাইস লগ আউট করে দিন।",
+                thisDevice: "এই ডিভাইস",
+                removeBtn: "রিমুভ",
+                rotateKeyDesc: "ফাইল লিক হলে বা হারিয়ে গেলে পুরনো ফাইলটি বাতিল করে নতুন Master Key জেনারেট করুন।",
+                rotateKeyBtn: `${icons.key} নতুন Master Key তৈরি করুন`,
                 genKeyBtn: `${icons.key} কী জেনারেট করুন`,
                 syncBtn: `${icons.sync} সিঙ্ক করুন`,
                 syncedText: (n)=>`সিঙ্কড (${n} ডিভাইস)`,
@@ -154,16 +185,16 @@
                 genModalTitle: "নতুন সিঙ্ক-কী তৈরি করুন",
                 genModalDesc: "নাম, ইমেইল ও দেশ দিন। এই তথ্য দিয়ে একটি ইউনিক কী তৈরি হবে যা key.json ফাইল হিসেবে মাত্র একবার ডাউনলোড করা যাবে।",
                 namePh: "আপনার নাম", emailPh: "ইমেইল", countryPh: "দেশ",
-                genOnceWarning: `${icons.warning} <span>কী শুধু একবারই ডাউনলোড হবে। ফাইলটি নিরাপদ জায়গায় রাখুন এটি দিয়েই অন্য ডিভাইসে সিঙ্ক করবেন।</span>`,
+                genOnceWarning: `${icons.warning} <span>কী শুধু একবারই ডাউনলোড হবে। ফাইলটি নিরাপদ জায়গায় রাখুন।</span>`,
                 genSubmit: "জেনারেট ও ডাউনলোড করুন",
                 genCancel: "বাতিল",
                 genMissing: `${icons.warning} নাম, ইমেইল ও দেশ: সবগুলো পূরণ করুন।`,
-                genWorking: `${icons.sync} কী তৈরি হচ্ছে...`,
-                genDone: `${icons.check} কী তৈরি হয়ে গেছে এবং ডাউনলোড হয়েছে!`,
-                genError: `${icons.cross} কী তৈরি করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।`,
+                genWorking: `${icons.sync} প্রসেসিং হচ্ছে...`,
+                genDone: `${icons.check} সফল হয়েছে এবং ফাইল ডাউনলোড হয়েছে!`,
+                genError: `${icons.cross} সমস্যা হয়েছে। আবার চেষ্টা করুন।`,
                 syncInvalidKey: "এই কী-টি ভ্যালিড না। ফাইলটি চেক করুন।",
-                syncWaitingApproval: "অন্য ডিভাইসে অনুমোদনের অপেক্ষায় আছে। সেই ডিভাইসে ব্রাউজার খুলে অনুমোদন করুন চাপুন।",
-                syncApprovedNow: "ডিভাইস অনুমোদিত হয়েছে সিঙ্ক সফল!",
+                syncWaitingApproval: "অন্য ডিভাইসে অনুমোদনের অপেক্ষায় আছে। সেই ডিভাইসে ব্রাউজার খুলে অনুমোদন করুন।",
+                syncApprovedNow: "ডিভাইস অনুমোদিত হয়েছে, সিঙ্ক সফল!",
                 approvalBannerText: (label)=>`${icons.info} <span>একটি নতুন ডিভাইস (${label}) আপনার কী দিয়ে সিঙ্ক করতে চাইছে। এটা কি আপনি?</span>`,
                 approveBtn: `${icons.check} অনুমোদন করুন`,
                 denyBtn: `${icons.cross} প্রত্যাখ্যান`
@@ -180,20 +211,27 @@
                 descHeader: "Movie Overview",
                 connHeader: "MCU & Multiverse Connection",
                 badges: { mcu:"MCU", mcutv:"MCU SERIES", sony:"SONY", sonyanim:"SONY ANIMATED", fox:"FOX", netflix:"NETFLIX", other:"OTHER" },
+                manageDevBtn: `${icons.device} Manage Devices`,
+                devModalTitle: "Synced Device Manager",
+                devModalDesc: "Log out any suspicious or old devices from your sync network.",
+                thisDevice: "This Device",
+                removeBtn: "Remove",
+                rotateKeyDesc: "If your file is leaked or lost, generate a new Master Key to invalidate the old file.",
+                rotateKeyBtn: `${icons.key} Generate New Master Key`,
                 genKeyBtn: `${icons.key} Generate Key`,
                 syncBtn: `${icons.sync} Sync`,
                 syncedText: (n)=>`Synced (${n} devices)`,
                 notSyncedText: "Not synced: saving to this browser only",
                 genModalTitle: "Create a new sync key",
-                genModalDesc: "Enter your name, email and country. We will generate a unique key downloadable once as key.json.",
+                genModalDesc: "Enter your info. We will generate a unique key downloadable once as key.json.",
                 namePh: "Your name", emailPh: "Email", countryPh: "Country",
-                genOnceWarning: `${icons.warning} <span>The key can only be downloaded once. Keep the file safe to sync other devices.</span>`,
+                genOnceWarning: `${icons.warning} <span>The key can only be downloaded once. Keep the file safe.</span>`,
                 genSubmit: "Generate & Download",
                 genCancel: "Cancel",
                 genMissing: `${icons.warning} Please fill in name, email and country.`,
-                genWorking: `${icons.sync} Generating key...`,
-                genDone: `${icons.check} Key created and downloaded!`,
-                genError: `${icons.cross} Something went wrong generating the key. Please try again.`,
+                genWorking: `${icons.sync} Processing...`,
+                genDone: `${icons.check} Success and downloaded!`,
+                genError: `${icons.cross} Something went wrong. Please try again.`,
                 syncInvalidKey: "That key is not valid. Double check the file.",
                 syncWaitingApproval: "Waiting for approval on another device. Open the app there and tap Approve.",
                 syncApprovedNow: "Device approved and synced!",
@@ -213,14 +251,14 @@
                 if (!error && data && data.length > 0) {
                     marvelData = data.map(m => ({
                         id: m.id,
-                        title: m.title.replace(/\s*\(\d{4}\)/g, ''), // Removed duplicate year parenthesis
+                        title: m.title.replace(/\s*\(\d{4}\)/g, ''),
                         date: m.release_date,
                         uni: m.universe,
                         note_bn: m.note_bn ? m.note_bn.replace(/—/g, ':') : '',
                         note_en: m.note_en ? m.note_en.replace(/—/g, ':') : '',
                         mcu_conn_bn: m.mcu_conn_bn ? m.mcu_conn_bn.replace(/—/g, ':') : '',
                         mcu_conn_en: m.mcu_conn_en ? m.mcu_conn_en.replace(/—/g, ':') : '',
-                        poster_url: m.poster_url || 'https://via.placeholder.com/300x450/0f172a/475569?text=Poster',
+                        poster_url: m.poster_url || '',
                         trailer_url: m.trailer_url
                     }));
                 }
@@ -232,13 +270,32 @@
             updateProgress();
         }
 
+        // Generate precise OS and Browser string (Since exact phone name is restricted by browsers)
+        function getDeviceName() {
+            const ua = navigator.userAgent;
+            let os = "Unknown OS";
+            if (ua.indexOf("Win") !== -1) os = "Windows";
+            if (ua.indexOf("Mac") !== -1) os = "MacOS";
+            if (ua.indexOf("Android") !== -1) os = "Android";
+            if (ua.indexOf("iPhone") !== -1 || ua.indexOf("iPad") !== -1) os = "iOS";
+            if (ua.indexOf("Linux") !== -1 && ua.indexOf("Android") === -1) os = "Linux";
+
+            let browser = "Unknown Browser";
+            if (ua.indexOf("Chrome") !== -1) browser = "Chrome";
+            if (ua.indexOf("Safari") !== -1 && ua.indexOf("Chrome") === -1) browser = "Safari";
+            if (ua.indexOf("Firefox") !== -1) browser = "Firefox";
+            if (ua.indexOf("Edg") !== -1) browser = "Edge";
+
+            return `${os} · ${browser}`;
+        }
+
         const getDeviceId = () => {
             let d = localStorage.getItem('marvel_device_id');
             if (!d) { d = crypto.randomUUID(); localStorage.setItem('marvel_device_id', d); }
             return d;
         };
         const deviceId = getDeviceId();
-        const deviceLabel = (navigator.userAgentData?.platform || navigator.platform || 'Device') + ' : ' + (navigator.userAgent.match(/Chrome|Firefox|Safari|Edg/)?.[0] || 'Browser');
+        const deviceLabel = getDeviceName();
 
         function getSyncInfo() {
             const raw = localStorage.getItem('marvel_sync_info');
@@ -265,7 +322,6 @@
         
         function updateProgress() {
             const totalMovies = marvelData.length;
-            // FIX: Only count checked items that actually exist in the currently loaded database array
             const validCheckedCount = Object.keys(savedState).filter(id => savedState[id] === true && marvelData.some(m => m.id === id)).length;
             const percentage = totalMovies === 0 ? 0 : Math.round((validCheckedCount / totalMovies) * 100);
             document.getElementById('progress-bar').style.width = `${percentage}%`;
@@ -274,7 +330,7 @@
 
         async function pushStateToServer() {
             const info = getSyncInfo();
-            if (!info) return;
+            if (!info || info.pending) return;
             const nowIso = new Date().toISOString();
             await sb.from('marvel_tracker_state').upsert({ key_id: info.keyId, state: savedState, updated_at: nowIso });
             localStorage.setItem('marvel_state_updated_at', nowIso);
@@ -301,7 +357,6 @@
                 const isReleased = new Date(movie.date) <= today;
                 const bgClass = isChecked ? 'bg-slate-800 checked-item' : 'bg-slate-800/40';
                 const note = lang === 'bn' ? movie.note_bn : movie.note_en;
-                // Poster Fallback Logic added here!
                 const poster = movie.poster_url || `https://placehold.co/300x450/0f172a/475569?text=${encodeURIComponent(movie.title)}`;
                 const trailerUrl = movie.trailer_url || `https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title + ' Official Trailer')}`;
 
@@ -338,7 +393,6 @@
             });
         }
 
-        // ---------------- Dynamic Modal Logic ----------------
         window.openDynamicModal = (id, type) => {
             const movie = marvelData.find(m => m.id === id);
             if (!movie) return;
@@ -346,7 +400,7 @@
             
             document.getElementById('modalTitle').innerText = movie.title;
             document.getElementById('modalDate').innerText = formatDate(movie.date);
-            document.getElementById('modalPoster').src = movie.poster_url;
+            document.getElementById('modalPoster').src = movie.poster_url || `https://placehold.co/300x450/0f172a/475569?text=${encodeURIComponent(movie.title)}`;
             document.getElementById('modalBadge').innerHTML = getUniverseBadge(movie.uni);
             
             const sectionHeader = document.getElementById('modalSectionHeader');
@@ -359,7 +413,7 @@
             } else if (type === 'mcu') {
                 sectionHeader.innerText = t.connHeader;
                 sectionHeader.className = "font-bold text-blue-400 mb-2 text-lg uppercase tracking-wide";
-                sectionContent.innerText = lang === 'bn' ? (movie.mcu_conn_bn || 'MCU ট্রানজিশন ডেটাবেসে যুক্ত করা হয়নি') : (movie.mcu_conn_en || 'MCU connection data not found in database');
+                sectionContent.innerText = lang === 'bn' ? (movie.mcu_conn_bn || 'MCU ডেটাবেসে যুক্ত করা হয়নি') : (movie.mcu_conn_en || 'MCU connection data not found');
             }
 
             document.getElementById('infoModal').classList.remove('hidden');
@@ -382,6 +436,12 @@
             document.getElementById('pageTodayNote').innerText = t.todayNote;
             document.getElementById('progressLabel').innerText = t.progressLabel;
             
+            document.getElementById('manageDevBtn').innerHTML = t.manageDevBtn;
+            document.getElementById('devModalTitle').innerText = t.devModalTitle;
+            document.getElementById('devModalDesc').innerText = t.devModalDesc;
+            document.getElementById('rotateKeyDesc').innerText = t.rotateKeyDesc;
+            document.getElementById('rotateKeyBtn').innerHTML = t.rotateKeyBtn;
+
             document.getElementById('genKeyBtn').innerHTML = t.genKeyBtn;
             document.getElementById('syncBtn').innerHTML = t.syncBtn;
             document.getElementById('genOnceWarning').innerHTML = t.genOnceWarning;
@@ -413,15 +473,22 @@
             const info = getSyncInfo();
             const dot = document.getElementById('syncDot');
             const text = document.getElementById('syncStatusText');
-            if (info) {
+            const manageBtn = document.getElementById('manageDevBtn');
+
+            if (info && !info.pending) {
                 dot.className = 'sync-dot bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]';
                 text.innerText = t.syncedText(deviceCountCache);
+                manageBtn.classList.remove('hidden');
+                manageBtn.classList.add('flex');
             } else {
                 dot.className = 'sync-dot bg-slate-500';
                 text.innerText = t.notSyncedText;
+                manageBtn.classList.add('hidden');
+                manageBtn.classList.remove('flex');
             }
         }
 
+        // ---------------- Generating New Key ----------------
         const genKeyModal = document.getElementById('genKeyModal');
         document.getElementById('genKeyBtn').addEventListener('click', () => {
             document.getElementById('genStatusMsg').innerHTML = '';
@@ -479,6 +546,7 @@
             }
         });
 
+        // ---------------- Sync Upload ----------------
         const keyFileInput = document.getElementById('keyFileInput');
         document.getElementById('syncBtn').addEventListener('click', () => keyFileInput.click());
 
@@ -521,6 +589,100 @@
             }
         });
 
+        // ---------------- Device Manager & Rotate Key ----------------
+        const devModal = document.getElementById('deviceManagerModal');
+        const devListContainer = document.getElementById('deviceListContainer');
+
+        document.getElementById('manageDevBtn').addEventListener('click', async () => {
+            devModal.classList.remove('hidden');
+            await loadDevices();
+        });
+        document.getElementById('closeDeviceModal').addEventListener('click', () => devModal.classList.add('hidden'));
+
+        async function loadDevices() {
+            const info = getSyncInfo();
+            if (!info) return;
+            const t = i18n[lang];
+            
+            devListContainer.innerHTML = `<p class="text-slate-400 text-center text-sm mt-4">Loading...</p>`;
+            const { data: devices } = await sb.from('marvel_tracker_devices').select('*').eq('key_id', info.keyId).eq('approved', true);
+            
+            if (devices) {
+                devListContainer.innerHTML = '';
+                devices.forEach(dev => {
+                    const isMe = dev.device_id === deviceId;
+                    const dateStr = new Date(dev.last_seen || new Date()).toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+                    
+                    devListContainer.innerHTML += `
+                        <div class="flex items-center justify-between p-3 bg-slate-800 rounded-lg border border-slate-700">
+                            <div>
+                                <p class="text-slate-200 font-bold text-sm">${dev.device_label || 'Unknown Device'} ${isMe ? `<span class="text-[0.6rem] bg-emerald-900 text-emerald-300 px-2 py-0.5 rounded ml-2 uppercase">${t.thisDevice}</span>` : ''}</p>
+                                <p class="text-slate-400 text-xs">Last active: ${dateStr}</p>
+                            </div>
+                            ${!isMe ? `
+                                <button onclick="removeDevice('${dev.id}')" class="text-xs text-red-400 hover:text-white hover:bg-red-800 px-3 py-1.5 rounded bg-slate-900 border border-red-900/50 transition">
+                                    ${icons.trash} ${t.removeBtn}
+                                </button>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        window.removeDevice = async (dbId) => {
+            await sb.from('marvel_tracker_devices').delete().eq('id', dbId);
+            await loadDevices(); // refresh list
+        };
+
+        document.getElementById('rotateKeyBtn').addEventListener('click', async () => {
+            const info = getSyncInfo();
+            if (!info) return;
+            const t = i18n[lang];
+            
+            const btn = document.getElementById('rotateKeyBtn');
+            btn.innerHTML = `${icons.sync} ${t.genWorking}`;
+            
+            try {
+                // Generate completely new hash
+                const rawKey = crypto.randomUUID() + 'R' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
+                const keyHash = await sha256Hex(rawKey);
+                
+                // Update master key in DB
+                await sb.from('marvel_tracker_keys').update({ key_hash: keyHash }).eq('id', info.keyId);
+                
+                // Update local storage so this device stays synced
+                setSyncInfo({ keyId: info.keyId, keyHash: keyHash });
+                
+                // Trigger Download
+                const { data: keyData } = await sb.from('marvel_tracker_keys').select('name, email, country').eq('id', info.keyId).single();
+                
+                const payload = { 
+                    key: rawKey, 
+                    name: keyData?.name || 'Rotated User', 
+                    email: keyData?.email || '', 
+                    country: keyData?.country || '', 
+                    created_at: new Date().toISOString() 
+                };
+                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'marvel-rotated-key.json';
+                document.body.appendChild(a); a.click(); a.remove();
+
+                btn.innerHTML = `${icons.check} Success!`;
+                setTimeout(() => {
+                    btn.innerHTML = t.rotateKeyBtn;
+                    devModal.classList.add('hidden');
+                }, 2000);
+
+            } catch(e) {
+                console.error(e);
+                btn.innerHTML = `${icons.cross} Error`;
+            }
+        });
+
+        // ---------------- State Sync & Polling ----------------
         async function pullAndMergeState(keyId) {
             const { data } = await sb.from('marvel_tracker_state').select('*').eq('key_id', keyId).maybeSingle();
             if (data) {
@@ -552,6 +714,7 @@
             if (!info) return;
             const t = i18n[lang];
 
+            // If we are waiting for approval
             if (info.pending) {
                 const { data } = await sb.from('marvel_tracker_devices').select('*').eq('key_id', info.keyId).eq('device_id', deviceId).maybeSingle();
                 if (data && data.approved) {
@@ -562,11 +725,22 @@
                     return;
                 }
             } else {
+                // Check if our device was removed (Kicked out)
+                const { data: myDevice } = await sb.from('marvel_tracker_devices').select('*').eq('key_id', info.keyId).eq('device_id', deviceId).maybeSingle();
+                if (!myDevice) {
+                    // We got kicked out! Clean local sync info.
+                    localStorage.removeItem('marvel_sync_info');
+                    alert("You have been logged out from another device.");
+                    location.reload();
+                    return;
+                }
+
                 await pullAndMergeState(info.keyId);
                 const { data: allDevices } = await sb.from('marvel_tracker_devices').select('*').eq('key_id', info.keyId);
                 if (allDevices) {
                     deviceCountCache = allDevices.filter(d => d.approved).length || 1;
                     updateSyncStatusUI();
+                    
                     const pendingOther = allDevices.find(d => !d.approved && d.device_id !== deviceId);
                     const banner = document.getElementById('approvalBanner');
                     if (pendingOther) {
@@ -575,6 +749,7 @@
                         document.getElementById('approveBtn').onclick = async () => {
                             await sb.from('marvel_tracker_devices').update({ approved: true }).eq('id', pendingOther.id);
                             banner.classList.add('hidden');
+                            await loadDevices(); // Update list if modal is open
                         };
                         document.getElementById('denyBtn').onclick = async () => {
                             await sb.from('marvel_tracker_devices').delete().eq('id', pendingOther.id);
