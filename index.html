@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মার্ভেল ক্রনোলজিক্যাল ওয়াচলিস্ট</title>
+    <title>মার্ভেল ক্রনোলজিক্যাল ওয়াচলিস্ট</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0b0f19; color: #e2e8f0; padding-bottom: 90px; }
@@ -50,7 +50,6 @@
             <div class="flex flex-wrap gap-2 mt-4 text-xs" id="legendRow"></div>
         </div>
 
-        <!-- Pending device-approval banner -->
         <div id="approvalBanner" class="hidden mb-6 bg-amber-900/40 border border-amber-600 p-4 rounded-xl">
             <p id="approvalText" class="text-amber-200 text-sm mb-3 flex items-center"></p>
             <div class="flex gap-3">
@@ -59,10 +58,9 @@
             </div>
         </div>
 
-        <div id="movie-list"></div>
+        <div id="movie-list" class="space-y-4"></div>
     </div>
 
-    <!-- Footer sync bar -->
     <div class="footer-bar p-3 md:p-4">
         <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-2 text-xs md:text-sm text-slate-400">
@@ -96,29 +94,23 @@
         </div>
     </div>
 
-    <!-- Info / Details / Connection Modal -->
+    <!-- Dynamic Info / MCU Connect Modal -->
     <div id="infoModal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-lg w-full relative max-h-[90vh] overflow-y-auto">
-            <button id="closeInfoModal" class="absolute top-4 right-4 text-slate-400 hover:text-white">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-lg w-full relative max-h-[90vh] overflow-y-auto shadow-2xl shadow-blue-900/20">
+            <button id="closeInfoModal" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 p-1 rounded-full border border-slate-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-            <div class="flex gap-4 mb-4">
-                <img id="modalPoster" src="" alt="Poster" class="w-24 h-36 object-cover rounded-lg border border-slate-700 shadow">
-                <div>
-                    <h3 id="modalTitle" class="text-xl font-bold text-white mb-1"></h3>
-                    <p id="modalDate" class="text-xs text-slate-400 mb-2"></p>
+            <div class="flex gap-5 mb-5 border-b border-slate-700/50 pb-5">
+                <img id="modalPoster" src="" alt="Poster" class="w-28 h-40 object-cover rounded-xl border border-slate-700 shadow-lg">
+                <div class="pt-2">
+                    <h3 id="modalTitle" class="text-2xl font-bold text-white mb-1"></h3>
+                    <p id="modalDate" class="text-sm text-slate-400 mb-2 font-mono"></p>
                     <div id="modalBadge"></div>
                 </div>
             </div>
-            <div class="space-y-4 text-sm">
-                <div>
-                    <h4 id="modalDescHeader" class="font-bold text-slate-200 mb-1"></h4>
-                    <p id="modalDesc" class="text-slate-300 leading-relaxed bg-slate-800 p-3 rounded-lg border border-slate-700/50"></p>
-                </div>
-                <div>
-                    <h4 id="modalConnHeader" class="font-bold text-blue-400 mb-1"></h4>
-                    <p id="modalConn" class="text-slate-300 leading-relaxed bg-slate-800/80 p-3 rounded-lg border border-blue-900/40"></p>
-                </div>
+            <div>
+                <h4 id="modalSectionHeader" class="font-bold text-blue-400 mb-2 text-lg uppercase tracking-wide"></h4>
+                <p id="modalSectionContent" class="text-slate-300 text-base leading-relaxed bg-slate-800/80 p-4 rounded-xl border border-slate-700/80"></p>
             </div>
         </div>
     </div>
@@ -142,51 +134,50 @@
             link: `<svg class="w-3.5 h-3.5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>`
         };
 
-        // ---------------- i18n ----------------
         const i18n = {
             bn: {
-                title: "মার্ভেল ক্রনোলজিক্যাল ওয়াচলিস্ট",
-                subtitle: "রিলিজ ডেট অনুযায়ী সাজানো: MCU, Sony Spider-Man Universe, Fox X-Men, Netflix ও অ্যানিমেটেড স্পাইডার-ভার্স, সব একসাথে।",
-                todayNote: "আজকের তারিখ: ২৭ জুলাই, ২০২৬. যা রিলিজ হয়ে গেছে তা চিহ্নিত, বাকিগুলো \"আপকামিং\" ব্যাজ সহ দেখাবে।",
+                title: "মার্ভেল ক্রনোলজিক্যাল ওয়াচলিস্ট",
+                subtitle: "রিলিজ ডেট অনুযায়ী সাজানো: MCU, Sony Spider-Man Universe, Fox X-Men, Netflix ও অ্যানিমেটেড স্পাইডার-ভার্স সব একসাথে।",
+                todayNote: "আজকের তারিখ: ২৭ জুলাই, ২০২৬. যা রিলিজ হয়ে গেছে তা চিহ্নিত, বাকিগুলো আপকামিং ব্যাজ সহ দেখাবে।",
                 progressLabel: "মিশন প্রোগ্রেস",
                 upcoming: "আপকামিং",
                 btnDetails: "ডিটেইলস",
                 btnTrailer: "ট্রেইলার",
-                btnMcuConn: "MCU সংযোগ",
-                descHeader: "বিবরণ",
-                connHeader: "MCU ও মাল্টিভার্স সংযোগ",
+                btnMcuConn: "MCU কানেকশন",
+                descHeader: "মুভির বিবরণ",
+                connHeader: "মাল্টিভার্স ও MCU কানেকশন",
                 badges: { mcu:"MCU", mcutv:"MCU সিরিজ", sony:"SONY", sonyanim:"SONY অ্যানিমেটেড", fox:"FOX", netflix:"NETFLIX", other:"অন্যান্য" },
                 genKeyBtn: `${icons.key} কী জেনারেট করুন`,
                 syncBtn: `${icons.sync} সিঙ্ক করুন`,
                 syncedText: (n)=>`সিঙ্কড (${n} ডিভাইস)`,
                 notSyncedText: "সিঙ্ক করা নেই: লোকাল ব্রাউজারে সেভ হচ্ছে",
                 genModalTitle: "নতুন সিঙ্ক-কী তৈরি করুন",
-                genModalDesc: "নাম, ইমেইল ও দেশ দিন। এই তথ্য দিয়ে একটি ইউনিক কী তৈরি হবে, যা key.json ফাইল হিসেবে মাত্র একবার ডাউনলোড করা যাবে।",
+                genModalDesc: "নাম, ইমেইল ও দেশ দিন। এই তথ্য দিয়ে একটি ইউনিক কী তৈরি হবে যা key.json ফাইল হিসেবে মাত্র একবার ডাউনলোড করা যাবে।",
                 namePh: "আপনার নাম", emailPh: "ইমেইল", countryPh: "দেশ",
-                genOnceWarning: `${icons.warning} <span>কী শুধু একবারই ডাউনলোড হবে। ফাইলটি নিরাপদ জায়গায় রাখুন, এটি দিয়েই অন্য ডিভাইসে সিঙ্ক করবেন।</span>`,
+                genOnceWarning: `${icons.warning} <span>কী শুধু একবারই ডাউনলোড হবে। ফাইলটি নিরাপদ জায়গায় রাখুন এটি দিয়েই অন্য ডিভাইসে সিঙ্ক করবেন।</span>`,
                 genSubmit: "জেনারেট ও ডাউনলোড করুন",
                 genCancel: "বাতিল",
                 genMissing: `${icons.warning} নাম, ইমেইল ও দেশ: সবগুলো পূরণ করুন।`,
                 genWorking: `${icons.sync} কী তৈরি হচ্ছে...`,
-                genDone: `${icons.check} কী তৈরি হয়ে গেছে এবং ডাউনলোড হয়েছে!`,
-                genError: `${icons.cross} কী তৈরি করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।`,
+                genDone: `${icons.check} কী তৈরি হয়ে গেছে এবং ডাউনলোড হয়েছে!`,
+                genError: `${icons.cross} কী তৈরি করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।`,
                 syncInvalidKey: "এই কী-টি ভ্যালিড না। ফাইলটি চেক করুন।",
-                syncWaitingApproval: "অন্য ডিভাইসে অনুমোদনের অপেক্ষায় আছে। সেই ডিভাইসে ব্রাউজার খুলে 'অনুমোদন করুন' চাপুন।",
-                syncApprovedNow: "ডিভাইস অনুমোদিত হয়েছে, সিঙ্ক সফল!",
-                approvalBannerText: (label)=>`${icons.info} <span>একটি নতুন ডিভাইস (${label}) আপনার কী দিয়ে সিঙ্ক করতে চাইছে। এটা কি আপনি?</span>`,
+                syncWaitingApproval: "অন্য ডিভাইসে অনুমোদনের অপেক্ষায় আছে। সেই ডিভাইসে ব্রাউজার খুলে অনুমোদন করুন চাপুন।",
+                syncApprovedNow: "ডিভাইস অনুমোদিত হয়েছে সিঙ্ক সফল!",
+                approvalBannerText: (label)=>`${icons.info} <span>একটি নতুন ডিভাইস (${label}) আপনার কী দিয়ে সিঙ্ক করতে চাইছে। এটা কি আপনি?</span>`,
                 approveBtn: `${icons.check} অনুমোদন করুন`,
                 denyBtn: `${icons.cross} প্রত্যাখ্যান`
             },
             en: {
                 title: "Marvel Chronological Watchlist",
-                subtitle: "Sorted by real release date: MCU, Sony's Spider-Man Universe, Fox's X-Men, Netflix, and animated Spider-Verse.",
-                todayNote: "Today's date: July 27, 2026. Released titles are auto-marked, upcoming items show an \"Upcoming\" badge.",
+                subtitle: "Sorted by real release date: MCU, Sony Spider-Man Universe, Fox X-Men, Netflix, and animated Spider-Verse.",
+                todayNote: "Today date: July 27, 2026. Released titles are auto-marked, upcoming items show an Upcoming badge.",
                 progressLabel: "Mission Progress",
                 upcoming: "Upcoming",
                 btnDetails: "Details",
                 btnTrailer: "Trailer",
                 btnMcuConn: "MCU Connect",
-                descHeader: "Overview",
+                descHeader: "Movie Overview",
                 connHeader: "MCU & Multiverse Connection",
                 badges: { mcu:"MCU", mcutv:"MCU SERIES", sony:"SONY", sonyanim:"SONY ANIMATED", fox:"FOX", netflix:"NETFLIX", other:"OTHER" },
                 genKeyBtn: `${icons.key} Generate Key`,
@@ -204,7 +195,7 @@
                 genDone: `${icons.check} Key created and downloaded!`,
                 genError: `${icons.cross} Something went wrong generating the key. Please try again.`,
                 syncInvalidKey: "That key is not valid. Double check the file.",
-                syncWaitingApproval: "Waiting for approval on another device. Open the app there and tap 'Approve'.",
+                syncWaitingApproval: "Waiting for approval on another device. Open the app there and tap Approve.",
                 syncApprovedNow: "Device approved and synced!",
                 approvalBannerText: (label)=>`${icons.info} <span>A new device (${label}) is trying to sync using your key. Is this you?</span>`,
                 approveBtn: `${icons.check} Approve`,
@@ -212,74 +203,53 @@
             }
         };
         let lang = localStorage.getItem('marvel_lang') || 'bn';
+        let marvelData = [];
+        const today = new Date("2026-07-27");
+        let savedState = JSON.parse(localStorage.getItem('marvelUltimateTracker')) || {};
 
-        // ---------------- Embedded Fallback Dataset (Cleaned Titles & No Em-Dashes) ----------------
-        let marvelData = [
-            { id:"blade1998", title:"Blade", date:"1998-08-21", uni:"other", note:"ওয়েসলি স্নাইপসের ব্লেড: প্রথম বড় বাজেটের Marvel-চরিত্র ভিত্তিক হিট মুভি।", note_en:"Wesley Snipes' Blade: first big-budget Marvel character hit.", mcu_conn_bn:"ডেডপুল ৩ ও ফিউচার মাল্টিভার্সে মার্ভেল ক্যারেক্টার ট্রানজিশনের ভিত্তি।", mcu_conn_en:"Lays the groundwork for Marvel character transitions into the Multiverse.", poster_url:"https://image.tmdb.org/t/p/w300/q23i190e8aIAn8PUnz31B3h4T38.jpg" },
-            { id:"xmen2000", title:"X-Men", date:"2000-07-14", uni:"fox", note:"প্রফেসর এক্স, ম্যাগনেটো এবং উলভারিনের অরিজিন ও মিউট্যান্টদের সূচনা।", note_en:"Origin of Professor X, Magneto, Wolverine.", mcu_conn_bn:"ফক্স এক্স-মেন টাইমলাইনের সূচনা যা সিক্রেট ওয়ার্স এবং ডেডপুল-৩ এ যুক্ত হয়েছে।", mcu_conn_en:"Beginning of the Fox X-Men timeline connecting to Deadpool 3 & Secret Wars.", poster_url:"https://image.tmdb.org/t/p/w300/1XmI4P9R4m6L9A9e3p16X8p5x7B.jpg" },
-            { id:"sm1", title:"Spider-Man", date:"2002-05-03", uni:"sony", note:"টোবি ম্যাগুয়্যারের স্পাইডার-ম্যান অরিজিন ও গ্রিন গবলিন।", note_en:"Tobey Maguire's Spider-Man origin and Green Goblin.", mcu_conn_bn:"নো ওয়ে হোম মুভিতে এই ইউনিভার্সের স্পাইডারম্যান ও গ্রিন গবলিন সরাসরি MCU তে প্রবেশ করে।", mcu_conn_en:"Tobey's Spider-Man and Green Goblin directly cross into MCU in No Way Home.", poster_url:"https://image.tmdb.org/t/p/w300/gh4c2P19yfi3A3mN93B6xM4K31E.jpg" },
-            { id:"sm2", title:"Spider-Man 2", date:"2004-06-30", uni:"sony", note:"ডক অকের এন্ট্রি এবং ফ্র্যাঞ্চাইজির অন্যতম সেরা কিস্তি।", note_en:"Doc Ock debuts in one of the best comic book films.", mcu_conn_bn:"ডক অক সরাসরি নো ওয়ে হোম-এ MCU তে আসে।", mcu_conn_en:"Doc Ock transitions directly into the MCU in No Way Home.", poster_url:"https://image.tmdb.org/t/p/w300/olx2G3A8iXyJ9A23E3kL14pP9Q.jpg" },
-            { id:"im1", title:"Iron Man", date:"2008-05-02", uni:"mcu", note:"টনি স্টার্কের আয়রন ম্যান হওয়ার গল্প: MCU এর সূচনা।", note_en:"Tony Stark's Iron Man origin: start of the MCU.", mcu_conn_bn:"মার্ভেল সিনেমাটিক ইউনিভার্স (Phase 1) এর অফিশিয়াল প্রথম মুভি।", mcu_conn_en:"Official starting point of the Marvel Cinematic Universe (Phase 1).", poster_url:"https://image.tmdb.org/t/p/w300/7821C8d4aB7E8f2d5E2p92x51f.jpg" },
-            { id:"ca_first", title:"Captain America: The First Avenger", date:"2011-07-22", uni:"mcu", note:"সাল ১৯৪৩. স্টিভ রজার্সের সুপার সোলজার হওয়া এবং টেসার‍্যাক্ট।", note_en:"1943. Steve Rogers becomes a super soldier and finds the Tesseract.", mcu_conn_bn:"প্রথম ইনফিনিটি স্টোন (Space Stone/Tesseract) এর পরিচয়।", mcu_conn_en:"Introduces the Space Stone (Tesseract).", poster_url:"https://image.tmdb.org/t/p/w300/z1A4P8C8p92E8f12d5E2p92x51f.jpg" },
-            { id:"avengers1", title:"The Avengers", date:"2012-05-04", uni:"mcu", note:"পৃথিবীকে বাঁচাতে প্রথমবার ৬ জন হিরোর টিম-আপ।", note_en:"Six heroes team up for the first time.", mcu_conn_bn:"ইনফিনিটি সাগার মূল ভিত্তি এবং থ্যানোসের প্রথম ক্যামিও।", mcu_conn_en:"Foundation of the Infinity Saga with Thanos' first cameo.", poster_url:"https://image.tmdb.org/t/p/w300/RYMX21k1P92E8f12d5E2p92x51f.jpg" },
-            { id:"asm1", title:"The Amazing Spider-Man", date:"2012-07-03", uni:"sony", note:"অ্যান্ড্রু গারফিল্ডের স্পাইডার-ম্যান ও লিজার্ডের গল্প।", note_en:"Andrew Garfield's Spider-Man origin with Lizard.", mcu_conn_bn:"অ্যান্ড্রু গারফিল্ড নো ওয়ে হোম-এ MCU তে যোগ দেন।", mcu_conn_en:"Andrew Garfield crosses into MCU during No Way Home.", poster_url:"https://image.tmdb.org/t/p/w300/3932e49c7i200e408e001.jpg" },
-            { id:"avengers_iw", title:"Avengers: Infinity War", date:"2018-04-27", uni:"mcu", note:"থ্যানোসের সব পাথর খোঁজার মিশন এবং হিরোদের বড় হার।", note_en:"Thanos hunts all Stones; heroes suffer defeat.", mcu_conn_bn:"ইনফিনিটি ওয়ার ও থ্যানোসের স্ন্যাপের সূচনা।", mcu_conn_en:"Climax of the Infinity Stone storyline leading to the Snap.", poster_url:"https://image.tmdb.org/t/p/w300/7WsyChLLEz392e408e001.jpg" },
-            { id:"avengers_eg", title:"Avengers: Endgame", date:"2019-04-26", uni:"mcu", note:"টাইম ট্রাভেল, চূড়ান্ত লড়াই এবং আয়রন ম্যানের বিসর্জন।", note_en:"Time travel battle and Iron Man's sacrifice.", mcu_conn_bn:"ইনফিনিটি সাগার সমাপ্তি এবং মাল্টিভার্স সাগার সূচনা।", mcu_conn_en:"End of the Infinity Saga and setups for the Multiverse Saga.", poster_url:"https://image.tmdb.org/t/p/w300/or06ipHQ3p200e408e001.jpg" },
-            { id:"sm_nwh", title:"Spider-Man: No Way Home", date:"2021-12-17", uni:"mcu", note:"মাল্টিভার্স খুলে টোবি, অ্যান্ড্রু ও ভিলেনদের আগমন।", note_en:"Multiverse opens: Tobey, Andrew, and villains arrive.", mcu_conn_bn:"MCU, Sony Spider-Verse এবং Fox Marvel ফ্র্যাঞ্চাইজি এক বিন্দুতে মিলিত হয়।", mcu_conn_en:"Bridges MCU, Sony Spider-Verse, and Fox Marvel franchises.", poster_url:"https://image.tmdb.org/t/p/w300/1g0dhY23408e408e001.jpg" },
-            { id:"dp_w", title:"Deadpool & Wolverine", date:"2024-07-26", uni:"mcu", note:"ডেডপুল ও উলভারিনের MCU টাইমলাইনে এন্ট্রি।", note_en:"Deadpool and Wolverine enter the MCU timeline.", mcu_conn_bn:"ফক্স ইউনিভার্স ও MCU এর সমন্বয়: TVA এবং সিক্রেট ওয়ার্সের লিংক।", mcu_conn_en:"Connects the Fox X-Men Universe directly with the MCU TVA.", poster_url:"https://image.tmdb.org/t/p/w300/8cd223849e200e408e001.jpg" },
-            { id:"sm_bnd", title:"Spider-Man: Brand New Day", date:"2026-07-31", uni:"future", note:"টম হল্যান্ডের নতুন স্পাইডার-ম্যান অধ্যায়।", note_en:"Tom Holland's next Spider-Man chapter.", mcu_conn_bn:"নো ওয়ে হোমের পর পিটারের একক স্ট্রিট-লেভেল যুদ্ধ।", mcu_conn_en:"Follows Peter Parker's solo journey post-No Way Home.", poster_url:"https://image.tmdb.org/t/p/w300/sm4_poster_placeholder.jpg" }
-        ];
-
-        // ---------------- Fetch from Supabase with local fallback ----------------
         async function loadMoviesData() {
             try {
                 const { data, error } = await sb.from('marvel_movies').select('*');
                 if (!error && data && data.length > 0) {
                     marvelData = data.map(m => ({
                         id: m.id,
-                        title: m.title.replace(/\s*\(\d{4}\)/g, ''), // Strip year from title if present
+                        title: m.title.replace(/\s*\(\d{4}\)/g, ''), // Removed duplicate year parenthesis
                         date: m.release_date,
                         uni: m.universe,
-                        note: m.note_bn ? m.note_bn.replace(/—/g, ':') : '',
+                        note_bn: m.note_bn ? m.note_bn.replace(/—/g, ':') : '',
                         note_en: m.note_en ? m.note_en.replace(/—/g, ':') : '',
                         mcu_conn_bn: m.mcu_conn_bn ? m.mcu_conn_bn.replace(/—/g, ':') : '',
                         mcu_conn_en: m.mcu_conn_en ? m.mcu_conn_en.replace(/—/g, ':') : '',
-                        poster_url: m.poster_url || 'https://via.placeholder.com/300x450?text=Marvel',
+                        poster_url: m.poster_url || 'https://via.placeholder.com/300x450/0f172a/475569?text=Poster',
                         trailer_url: m.trailer_url
                     }));
                 }
             } catch (err) {
-                console.warn("Using default local movie data array:", err);
+                console.error("Database fetch failed", err);
             }
             marvelData.sort((a, b) => new Date(a.date) - new Date(b.date));
             renderList();
             updateProgress();
         }
 
-        const today = new Date("2026-07-27");
-        let savedState = JSON.parse(localStorage.getItem('marvelUltimateTracker')) || {};
-
-        // ---------------- Sync state ----------------
         const getDeviceId = () => {
             let d = localStorage.getItem('marvel_device_id');
             if (!d) { d = crypto.randomUUID(); localStorage.setItem('marvel_device_id', d); }
             return d;
         };
         const deviceId = getDeviceId();
-        const deviceLabel = (navigator.userAgentData?.platform || navigator.platform || 'Device') + ' · ' + (navigator.userAgent.match(/Chrome|Firefox|Safari|Edg/)?.[0] || 'Browser');
+        const deviceLabel = (navigator.userAgentData?.platform || navigator.platform || 'Device') + ' : ' + (navigator.userAgent.match(/Chrome|Firefox|Safari|Edg/)?.[0] || 'Browser');
 
         function getSyncInfo() {
             const raw = localStorage.getItem('marvel_sync_info');
             return raw ? JSON.parse(raw) : null;
         }
         function setSyncInfo(info) { localStorage.setItem('marvel_sync_info', JSON.stringify(info)); }
-
         async function sha256Hex(text) {
             const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
             return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // ---------------- Rendering ----------------
         function getUniverseBadge(uni) {
             const t = i18n[lang];
             const label = t.badges[uni] || '';
@@ -292,13 +262,16 @@
             const months = lang === 'bn' ? monthsBn : monthsEn;
             return `${months[d.getMonth()]} ${d.getFullYear()}`;
         }
+        
         function updateProgress() {
             const totalMovies = marvelData.length;
-            const checkedCount = Object.values(savedState).filter(v => v === true).length;
-            const percentage = totalMovies === 0 ? 0 : Math.round((checkedCount / totalMovies) * 100);
+            // FIX: Only count checked items that actually exist in the currently loaded database array
+            const validCheckedCount = Object.keys(savedState).filter(id => savedState[id] === true && marvelData.some(m => m.id === id)).length;
+            const percentage = totalMovies === 0 ? 0 : Math.round((validCheckedCount / totalMovies) * 100);
             document.getElementById('progress-bar').style.width = `${percentage}%`;
-            document.getElementById('progress-text').innerText = `${percentage}% (${checkedCount}/${totalMovies})`;
+            document.getElementById('progress-text').innerText = `${percentage}% (${validCheckedCount}/${totalMovies})`;
         }
+
         async function pushStateToServer() {
             const info = getSyncInfo();
             if (!info) return;
@@ -306,6 +279,7 @@
             await sb.from('marvel_tracker_state').upsert({ key_id: info.keyId, state: savedState, updated_at: nowIso });
             localStorage.setItem('marvel_state_updated_at', nowIso);
         }
+
         function toggleCheckbox(id) {
             savedState[id] = !savedState[id];
             localStorage.setItem('marvelUltimateTracker', JSON.stringify(savedState));
@@ -326,37 +300,34 @@
                 const isChecked = savedState[movie.id] || false;
                 const isReleased = new Date(movie.date) <= today;
                 const bgClass = isChecked ? 'bg-slate-800 checked-item' : 'bg-slate-800/40';
-                const note = lang === 'bn' ? movie.note : movie.note_en;
-                const cleanTitle = movie.title.replace(/\s*\(\d{4}\)/g, ''); // Removes duplicate (YYYY)
-                const poster = movie.poster_url || 'https://via.placeholder.com/100x150?text=Marvel';
-                const trailerUrl = movie.trailer_url || `https://www.youtube.com/results?search_query=${encodeURIComponent(cleanTitle + ' Official Trailer')}`;
+                const note = lang === 'bn' ? movie.note_bn : movie.note_en;
+                const poster = movie.poster_url;
+                const trailerUrl = movie.trailer_url || `https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title + ' Official Trailer')}`;
 
                 const html = `
-                    <div id="container-${movie.id}" class="flex flex-col sm:flex-row items-start gap-4 p-4 mb-3 rounded-xl transition-all duration-300 hover:bg-slate-700/60 border border-slate-700/50 ${bgClass}">
-                        <div class="flex items-center gap-3">
+                    <div id="container-${movie.id}" class="flex flex-col sm:flex-row items-start gap-5 p-5 rounded-2xl transition-all duration-300 hover:bg-slate-700/60 border border-slate-700/50 ${bgClass}">
+                        <div class="flex items-center gap-4">
                             <input type="checkbox" id="${movie.id}" ${isChecked ? 'checked' : ''} ${isReleased ? '' : 'disabled'}
-                                   class="w-6 h-6 text-blue-500 bg-slate-900 border-slate-600 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                   class="w-7 h-7 text-blue-500 bg-slate-900 border-slate-600 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                                    onclick="toggleCheckbox('${movie.id}')">
-                            <img src="${poster}" alt="${cleanTitle}" class="w-16 h-24 object-cover rounded-lg border border-slate-700 shadow shrink-0" loading="lazy">
+                            <img src="${poster}" alt="${movie.title}" class="w-20 h-32 object-cover rounded-lg border border-slate-700 shadow-md shrink-0" loading="lazy">
                         </div>
-                        <div class="flex-1 w-full">
-                            <div class="flex items-center flex-wrap gap-2 mb-1">
+                        <div class="flex-1 w-full pt-1">
+                            <div class="flex items-center flex-wrap gap-2 mb-2">
                                 <span class="date-badge">${formatDate(movie.date)}</span>
-                                <span class="title-text font-bold text-lg md:text-xl text-slate-100">${cleanTitle}</span>
+                                <span class="title-text font-bold text-xl md:text-2xl text-slate-100">${movie.title}</span>
                                 ${getUniverseBadge(movie.uni)}
                                 ${(!isReleased && movie.uni !== 'future') ? `<span class="universe-badge future">${t.upcoming}</span>` : ''}
                             </div>
-                            <p class="note-text text-sm text-slate-400 leading-relaxed mb-3">${note}</p>
                             
-                            <!-- Action buttons -->
-                            <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-700/40">
-                                <button onclick="openInfoModal('${movie.id}', 'details')" class="text-xs px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-md font-semibold transition">
+                            <div class="flex flex-wrap gap-3 mt-4">
+                                <button onclick="openDynamicModal('${movie.id}', 'details')" class="text-xs px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-lg font-bold transition flex items-center shadow-sm">
                                     ${t.btnDetails}
                                 </button>
-                                <a href="${trailerUrl}" target="_blank" rel="noopener noreferrer" class="text-xs px-2.5 py-1 bg-red-950/60 hover:bg-red-900/80 text-red-300 border border-red-800/60 rounded-md font-semibold transition flex items-center">
+                                <a href="${trailerUrl}" target="_blank" rel="noopener noreferrer" class="text-xs px-3 py-1.5 bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800/80 rounded-lg font-bold transition flex items-center shadow-sm">
                                     ${icons.play} ${t.btnTrailer}
                                 </a>
-                                <button onclick="openInfoModal('${movie.id}', 'mcu')" class="text-xs px-2.5 py-1 bg-blue-950/60 hover:bg-blue-900/80 text-blue-300 border border-blue-800/60 rounded-md font-semibold transition flex items-center">
+                                <button onclick="openDynamicModal('${movie.id}', 'mcu')" class="text-xs px-3 py-1.5 bg-blue-950/80 hover:bg-blue-900 text-blue-300 border border-blue-800/80 rounded-lg font-bold transition flex items-center shadow-sm">
                                     ${icons.link} ${t.btnMcuConn}
                                 </button>
                             </div>
@@ -366,22 +337,29 @@
             });
         }
 
-        // ---------------- Modal Logic ----------------
-        window.openInfoModal = (id, type) => {
+        // ---------------- Dynamic Modal Logic ----------------
+        window.openDynamicModal = (id, type) => {
             const movie = marvelData.find(m => m.id === id);
             if (!movie) return;
             const t = i18n[lang];
             
-            document.getElementById('modalTitle').innerText = movie.title.replace(/\s*\(\d{4}\)/g, '');
+            document.getElementById('modalTitle').innerText = movie.title;
             document.getElementById('modalDate').innerText = formatDate(movie.date);
-            document.getElementById('modalPoster').src = movie.poster_url || 'https://via.placeholder.com/150';
+            document.getElementById('modalPoster').src = movie.poster_url;
             document.getElementById('modalBadge').innerHTML = getUniverseBadge(movie.uni);
             
-            document.getElementById('modalDescHeader').innerText = t.descHeader;
-            document.getElementById('modalDesc').innerText = lang === 'bn' ? (movie.note || 'বিবরণ নেই') : (movie.note_en || 'No description');
-            
-            document.getElementById('modalConnHeader').innerText = t.connHeader;
-            document.getElementById('modalConn').innerText = lang === 'bn' ? (movie.mcu_conn_bn || 'MCU ট্রানজিশন বিবরণ নেই') : (movie.mcu_conn_en || 'No MCU connection details');
+            const sectionHeader = document.getElementById('modalSectionHeader');
+            const sectionContent = document.getElementById('modalSectionContent');
+
+            if (type === 'details') {
+                sectionHeader.innerText = t.descHeader;
+                sectionHeader.className = "font-bold text-emerald-400 mb-2 text-lg uppercase tracking-wide";
+                sectionContent.innerText = lang === 'bn' ? (movie.note_bn || 'বিবরণ নেই') : (movie.note_en || 'No description');
+            } else if (type === 'mcu') {
+                sectionHeader.innerText = t.connHeader;
+                sectionHeader.className = "font-bold text-blue-400 mb-2 text-lg uppercase tracking-wide";
+                sectionContent.innerText = lang === 'bn' ? (movie.mcu_conn_bn || 'MCU ট্রানজিশন ডেটাবেসে যুক্ত করা হয়নি') : (movie.mcu_conn_en || 'MCU connection data not found in database');
+            }
 
             document.getElementById('infoModal').classList.remove('hidden');
         };
@@ -428,7 +406,6 @@
             renderList();
         });
 
-        // ---------------- Sync status UI ----------------
         let deviceCountCache = 1;
         function updateSyncStatusUI() {
             const t = i18n[lang];
@@ -436,7 +413,7 @@
             const dot = document.getElementById('syncDot');
             const text = document.getElementById('syncStatusText');
             if (info) {
-                dot.className = 'sync-dot bg-emerald-500';
+                dot.className = 'sync-dot bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]';
                 text.innerText = t.syncedText(deviceCountCache);
             } else {
                 dot.className = 'sync-dot bg-slate-500';
@@ -444,7 +421,6 @@
             }
         }
 
-        // ---------------- Generate Key (Fixed Logic + Fallback) ----------------
         const genKeyModal = document.getElementById('genKeyModal');
         document.getElementById('genKeyBtn').addEventListener('click', () => {
             document.getElementById('genStatusMsg').innerHTML = '';
@@ -469,32 +445,25 @@
             statusEl.innerHTML = t.genWorking;
             
             try {
-                const rawKey = crypto.randomUUID() + '-' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
+                const rawKey = crypto.randomUUID() + 'x' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
                 const keyHash = await sha256Hex(rawKey);
                 const nowIso = new Date().toISOString();
 
-                let keyId = null;
-                // Attempt Supabase Insert
                 const { data: keyRow, error: keyErr } = await sb.from('marvel_tracker_keys')
-                    .insert({ key_hash: keyHash, name, email, country }).select('id').maybeSingle();
+                    .insert({ key_hash: keyHash, name, email, country }).select('id').single();
+                if (keyErr) throw keyErr;
 
-                if (!keyErr && keyRow) {
-                    keyId = keyRow.id;
-                    await sb.from('marvel_tracker_devices').insert({ key_id: keyId, device_id: deviceId, device_label: deviceLabel, approved: true });
-                    await sb.from('marvel_tracker_state').upsert({ key_id: keyId, state: savedState, updated_at: nowIso });
-                } else {
-                    keyId = crypto.randomUUID(); // Fallback key ID if database insertion fails
-                }
+                await sb.from('marvel_tracker_devices').insert({ key_id: keyRow.id, device_id: deviceId, device_label: deviceLabel, approved: true });
+                await sb.from('marvel_tracker_state').upsert({ key_id: keyRow.id, state: savedState, updated_at: nowIso });
 
-                setSyncInfo({ keyId, keyHash });
+                setSyncInfo({ keyId: keyRow.id, keyHash });
                 localStorage.setItem('marvel_state_updated_at', nowIso);
 
-                // Trigger key.json Download
                 const payload = { key: rawKey, name, email, country, created_at: nowIso };
                 const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                a.download = 'marvel-tracker-key.json';
+                a.download = 'marvel-sync-key.json';
                 document.body.appendChild(a); a.click(); a.remove();
 
                 statusEl.className = 'flex items-center text-emerald-400 text-xs mt-3'; 
@@ -503,13 +472,12 @@
                 startPolling();
                 setTimeout(() => genKeyModal.classList.add('hidden'), 1800);
             } catch (e) {
-                console.error("Key generation error:", e);
+                console.error(e);
                 statusEl.className = 'flex items-center text-red-400 text-xs mt-3'; 
                 statusEl.innerHTML = t.genError;
             }
         });
 
-        // ---------------- Sync (Upload key.json) ----------------
         const keyFileInput = document.getElementById('keyFileInput');
         document.getElementById('syncBtn').addEventListener('click', () => keyFileInput.click());
 
@@ -570,7 +538,6 @@
             }
         }
 
-        // ---------------- Polling ----------------
         let pollTimer = null;
         function startPolling() {
             if (pollTimer) return;
@@ -619,7 +586,6 @@
             }
         }
 
-        // ---------------- Init ----------------
         applyStaticText();
         loadMoviesData();
         if (getSyncInfo()) startPolling();
