@@ -22,6 +22,11 @@
         .modal-backdrop { background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); }
         .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0f172a; border-top: 1px solid #334155; z-index: 40; }
         .sync-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        
+        /* Custom Scrollbar for Country List */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #0f172a; border-radius: 8px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 8px; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -79,57 +84,92 @@
 
     <!-- Generate Key Modal -->
     <div id="genKeyModal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[95vh] overflow-y-auto custom-scroll">
             <h3 id="genModalTitle" class="text-xl font-bold text-white mb-1"></h3>
             <p id="genModalDesc" class="text-slate-400 text-sm mb-4"></p>
-            <div class="space-y-3">
-                <input id="genName" type="text" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
-                <input id="genEmail" type="email" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
-                <input id="genCountry" type="text" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
-                <input id="genPuzzle" type="password" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+            <div class="space-y-4">
+                
+                <div>
+                    <input id="genName" type="text" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition">
+                    <p id="nameErrorMsg" class="text-red-400 text-xs mt-1 hidden"></p>
+                </div>
+                
+                <div>
+                    <input id="genEmail" type="email" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition">
+                    <p id="emailErrorMsg" class="text-red-400 text-xs mt-1 hidden"></p>
+                </div>
+                
+                <!-- Custom Country Select Box -->
+                <div class="relative">
+                    <div id="countryDropdownBtn" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition cursor-pointer flex justify-between items-center">
+                        <span id="countrySelectedText" class="text-slate-400"></span>
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div id="countryDropdownMenu" class="hidden absolute z-50 w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg shadow-xl">
+                        <div class="p-2 border-b border-slate-700">
+                            <input type="text" id="countrySearch" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500">
+                        </div>
+                        <ul id="countryList" class="max-h-40 overflow-y-auto custom-scroll text-sm text-slate-300">
+                            <!-- JS injected countries -->
+                        </ul>
+                    </div>
+                    <p id="countryErrorMsg" class="text-red-400 text-xs mt-1 hidden"></p>
+                </div>
+
+                <!-- Security Puzzle Grid (5x5) -->
+                <div>
+                    <p id="puzzleLabelText" class="text-sm font-bold text-slate-300 mb-2 text-center"></p>
+                    <div id="genPuzzleGrid" class="grid grid-cols-5 gap-1.5 w-fit mx-auto p-2.5 bg-slate-950 border border-slate-700 rounded-xl shadow-inner">
+                        <!-- JS injected cells -->
+                    </div>
+                    <p id="puzzleErrorMsg" class="text-red-400 text-xs mt-2 text-center hidden"></p>
+                </div>
+
             </div>
-            <p id="genOnceWarning" class="flex items-start text-amber-400 text-xs mt-3"></p>
-            <div class="flex gap-3 mt-5">
-                <button id="genSubmitBtn" class="flex-1 px-4 py-2 bg-red-700 hover:bg-red-600 rounded-lg font-bold text-sm text-white"></button>
-                <button id="genCancelBtn" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold text-sm text-white"></button>
+            
+            <p id="genOnceWarning" class="flex items-start text-amber-400 text-xs mt-5"></p>
+            <div class="flex gap-3 mt-4">
+                <button id="genSubmitBtn" class="flex-1 px-4 py-2 bg-red-700 hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-bold text-sm text-white transition" disabled></button>
+                <button id="genCancelBtn" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold text-sm text-white transition"></button>
             </div>
-            <p id="genStatusMsg" class="flex items-center text-xs mt-3"></p>
+            <p id="genStatusMsg" class="flex items-center text-xs mt-3 justify-center"></p>
         </div>
     </div>
 
-    <!-- Puzzle Prompt Modal (For Security Verification) -->
+    <!-- Puzzle Verification Modal (For Device Manager) -->
     <div id="puzzlePromptModal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
         <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-sm w-full shadow-2xl relative">
             <button id="closePuzzleModal" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 p-1 rounded-full border border-slate-600 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-            <h3 id="puzzleModalTitle" class="text-xl font-bold text-white mb-2"></h3>
-            <p id="puzzleModalDesc" class="text-slate-400 text-sm mb-4"></p>
-            <input id="puzzleInput" type="password" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 mb-3">
-            <button id="puzzleSubmitBtn" class="w-full px-4 py-2 bg-blue-700 hover:bg-blue-600 rounded-lg font-bold text-sm text-white transition"></button>
-            <p id="puzzleErrorMsg" class="text-red-400 text-xs mt-2 hidden"></p>
+            <h3 id="verifyPuzzleTitle" class="text-xl font-bold text-white mb-2 text-center"></h3>
+            <p id="verifyPuzzleDesc" class="text-slate-400 text-xs mb-4 text-center"></p>
+            
+            <div id="verifyPuzzleGrid" class="grid grid-cols-5 gap-1.5 w-fit mx-auto p-2.5 bg-slate-950 border border-slate-700 rounded-xl shadow-inner mb-4">
+                <!-- JS injected cells -->
+            </div>
+
+            <button id="verifyPuzzleSubmitBtn" class="w-full px-4 py-2 bg-blue-700 hover:bg-blue-600 rounded-lg font-bold text-sm text-white transition"></button>
+            <p id="verifyPuzzleErrorMsg" class="text-red-400 text-xs mt-2 text-center hidden"></p>
         </div>
     </div>
 
     <!-- Device Manager Modal -->
     <div id="deviceManagerModal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
         <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-lg w-full shadow-2xl relative max-h-[90vh] flex flex-col">
-            <button id="closeDeviceModal" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 p-1 rounded-full border border-slate-600">
+            <button id="closeDeviceModal" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 p-1 rounded-full border border-slate-600 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             <h3 id="devModalTitle" class="text-xl font-bold text-white mb-1"></h3>
             <p id="devModalDesc" class="text-slate-400 text-sm mb-4"></p>
-            
-            <div id="deviceListContainer" class="flex-1 overflow-y-auto space-y-3 pr-1">
-                <!-- Devices will load here -->
-            </div>
+            <div id="deviceListContainer" class="flex-1 overflow-y-auto custom-scroll space-y-3 pr-2"></div>
         </div>
     </div>
 
     <!-- Info Modal -->
     <div id="infoModal" class="hidden fixed inset-0 modal-backdrop flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-lg w-full relative max-h-[90vh] overflow-y-auto shadow-2xl shadow-blue-900/20">
-            <button id="closeInfoModal" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 p-1 rounded-full border border-slate-600">
+        <div class="bg-slate-900 border border-slate-600 rounded-2xl p-6 max-w-lg w-full relative max-h-[90vh] overflow-y-auto custom-scroll shadow-2xl shadow-blue-900/20">
+            <button id="closeInfoModal" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 p-1 rounded-full border border-slate-600 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             <div class="flex gap-5 mb-5 border-b border-slate-700/50 pb-5">
@@ -190,14 +230,17 @@
                 syncedText: (n)=>`সিঙ্কড (${n} ডিভাইস)`,
                 notSyncedText: "সিঙ্ক করা নেই: লোকাল ব্রাউজারে সেভ হচ্ছে",
                 genModalTitle: "নতুন সিঙ্ক-কী তৈরি করুন",
-                genModalDesc: "নাম, ইমেইল ও দেশ দিন। এই তথ্য দিয়ে একটি ইউনিক কী তৈরি হবে যা key.json ফাইল হিসেবে মাত্র একবার ডাউনলোড করা যাবে।",
-                namePh: "আপনার নাম", emailPh: "ইমেইল", countryPh: "দেশ", genPuzzlePh: "সিকিউরিটি পাজল (PIN/Password)",
+                genModalDesc: "আপনার ইনফরমেশন দিন। একটি ইউনিক কী তৈরি হবে যা key.json ফাইল হিসেবে মাত্র একবার ডাউনলোড করা যাবে।",
+                namePh: "আপনার নাম (শুধুমাত্র অক্ষর)", emailPh: "ইমেইল অ্যাড্রেস", countryPh: "দেশ নির্বাচন করুন",
+                countrySearchPh: "সার্চ করুন...",
+                puzzleLabelTxt: "সিকিউরিটি পাজল: আপনার সিক্রেট প্যাটার্ন আঁকুন",
                 genOnceWarning: `${icons.warning} <span>কী শুধু একবারই ডাউনলোড হবে। ফাইলটি নিরাপদ জায়গায় রাখুন।</span>`,
                 genSubmit: "জেনারেট ও ডাউনলোড করুন",
                 genCancel: "বাতিল",
-                genMissing: `${icons.warning} নাম, ইমেইল, দেশ ও পাজল: সবগুলো পূরণ করুন।`,
+                genMissing: `${icons.warning} নাম, ইমেইল, দেশ ও পাজল সম্পূর্ণ করুন।`,
                 invalidName: `${icons.warning} নাম শুধুমাত্র ইংরেজি অক্ষরে হতে হবে।`,
                 invalidEmail: `${icons.warning} সঠিক ইমেইল দিন (যেমন: @gmail.com, @outlook.com)।`,
+                puzzleEmpty: `${icons.warning} পাজলে কমপক্ষে একটি ঘর সিলেক্ট করুন।`,
                 genWorking: `${icons.sync} প্রসেসিং হচ্ছে...`,
                 genDone: `${icons.check} সফল হয়েছে এবং ফাইল ডাউনলোড হয়েছে!`,
                 genError: `${icons.cross} সমস্যা হয়েছে। আবার চেষ্টা করুন।`,
@@ -207,10 +250,10 @@
                 approvalBannerText: (label)=>`${icons.info} <span>একটি নতুন ডিভাইস (${label}) আপনার কী দিয়ে সিঙ্ক করতে চাইছে। এটা কি আপনি?</span>`,
                 approveBtn: `${icons.check} অনুমোদন করুন`,
                 denyBtn: `${icons.cross} প্রত্যাখ্যান`,
-                puzzlePromptTitle: "সিকিউরিটি ভেরিফিকেশন",
-                puzzlePromptDesc: "ডিভাইস ম্যানেজ করতে আপনার সেট করা সিকিউরিটি পাজলটি দিন।",
-                puzzlePromptBtn: "ভেরিফাই করুন",
-                invalidPuzzle: "পাজল মিলেনি! আবার চেষ্টা করুন।"
+                verifyPuzzleTitle: "সিকিউরিটি ভেরিফিকেশন",
+                verifyPuzzleDesc: "ডিভাইস ম্যানেজ করতে আপনার সেট করা সিকিউরিটি পাজল প্যাটার্নটি দিন।",
+                verifyPuzzleBtn: "ভেরিফাই করুন",
+                invalidPuzzle: `${icons.cross} পাজল মিলেনি! আবার চেষ্টা করুন।`
             },
             en: {
                 title: "Marvel Chronological Watchlist",
@@ -235,13 +278,16 @@
                 notSyncedText: "Not synced: saving to this browser only",
                 genModalTitle: "Create a new sync key",
                 genModalDesc: "Enter your info. We will generate a unique key downloadable once as key.json.",
-                namePh: "Your name", emailPh: "Email", countryPh: "Country", genPuzzlePh: "Security Puzzle (PIN/Password)",
+                namePh: "Your name (Letters only)", emailPh: "Email address", countryPh: "Select Country",
+                countrySearchPh: "Search...",
+                puzzleLabelTxt: "Security Puzzle: Draw your secret pattern",
                 genOnceWarning: `${icons.warning} <span>The key can only be downloaded once. Keep the file safe.</span>`,
                 genSubmit: "Generate & Download",
                 genCancel: "Cancel",
-                genMissing: `${icons.warning} Please fill in name, email, country, and puzzle.`,
-                invalidName: `${icons.warning} Name can only contain letters.`,
+                genMissing: `${icons.warning} Please complete name, email, country, and puzzle.`,
+                invalidName: `${icons.warning} Name can only contain letters and spaces.`,
                 invalidEmail: `${icons.warning} Use a valid email (e.g., @gmail.com, @outlook.com).`,
+                puzzleEmpty: `${icons.warning} Please select at least one block in the puzzle.`,
                 genWorking: `${icons.sync} Processing...`,
                 genDone: `${icons.check} Success and downloaded!`,
                 genError: `${icons.cross} Something went wrong. Please try again.`,
@@ -251,12 +297,16 @@
                 approvalBannerText: (label)=>`${icons.info} <span>A new device (${label}) is trying to sync using your key. Is this you?</span>`,
                 approveBtn: `${icons.check} Approve`,
                 denyBtn: `${icons.cross} Deny`,
-                puzzlePromptTitle: "Security Verification",
-                puzzlePromptDesc: "Enter the security puzzle you set to manage devices.",
-                puzzlePromptBtn: "Verify",
-                invalidPuzzle: "Incorrect puzzle! Try again."
+                verifyPuzzleTitle: "Security Verification",
+                verifyPuzzleDesc: "Draw the security puzzle pattern you set to manage devices.",
+                verifyPuzzleBtn: "Verify",
+                invalidPuzzle: `${icons.cross} Incorrect pattern! Try again.`
             }
         };
+
+        const countryListArray = [
+            "Afghanistan", "Albania", "Algeria", "Argentina", "Australia", "Austria", "Bangladesh", "Belgium", "Brazil", "Canada", "Chile", "China", "Colombia", "Denmark", "Egypt", "Finland", "France", "Germany", "Greece", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Japan", "Malaysia", "Mexico", "Morocco", "Nepal", "Netherlands", "New Zealand", "Nigeria", "Norway", "Pakistan", "Peru", "Philippines", "Poland", "Portugal", "Russia", "Saudi Arabia", "Singapore", "South Africa", "South Korea", "Spain", "Sri Lanka", "Sweden", "Switzerland", "Thailand", "Turkey", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Vietnam"
+        ];
         
         let lang = localStorage.getItem('marvel_lang') || 'bn';
         let marvelData = [];
@@ -374,7 +424,6 @@
                 const isChecked = savedState[movie.id] || false;
                 const isReleased = new Date(movie.date) <= today;
                 const bgClass = isChecked ? 'bg-slate-800 checked-item' : 'bg-slate-800/40';
-                const note = lang === 'bn' ? movie.note_bn : movie.note_en;
                 const poster = movie.poster_url || `https://placehold.co/300x450/0f172a/475569?text=${encodeURIComponent(movie.title)}`;
                 const trailerUrl = movie.trailer_url || `https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title + ' Official Trailer')}`;
 
@@ -468,17 +517,20 @@
             document.getElementById('genModalDesc').innerText = t.genModalDesc;
             document.getElementById('genName').placeholder = t.namePh;
             document.getElementById('genEmail').placeholder = t.emailPh;
-            document.getElementById('genCountry').placeholder = t.countryPh;
-            document.getElementById('genPuzzle').placeholder = t.genPuzzlePh;
+            document.getElementById('countrySelectedText').innerText = t.countryPh;
+            document.getElementById('countrySearch').placeholder = t.countrySearchPh;
+            document.getElementById('puzzleLabelText').innerText = t.puzzleLabelTxt;
+            
             document.getElementById('genSubmitBtn').innerText = t.genSubmit;
             document.getElementById('genCancelBtn').innerText = t.genCancel;
 
-            document.getElementById('puzzleModalTitle').innerText = t.puzzlePromptTitle;
-            document.getElementById('puzzleModalDesc').innerText = t.puzzlePromptDesc;
-            document.getElementById('puzzleSubmitBtn').innerText = t.puzzlePromptBtn;
+            document.getElementById('verifyPuzzleTitle').innerText = t.verifyPuzzleTitle;
+            document.getElementById('verifyPuzzleDesc').innerText = t.verifyPuzzleDesc;
+            document.getElementById('verifyPuzzleSubmitBtn').innerText = t.verifyPuzzleBtn;
             
             renderLegend();
             updateSyncStatusUI();
+            checkLiveValidation();
         }
 
         document.getElementById('langToggle').addEventListener('click', () => {
@@ -509,52 +561,175 @@
             }
         }
 
+        // ---------------- Country Dropdown Logic ----------------
+        let selectedCountry = "";
+        const countryBtn = document.getElementById('countryDropdownBtn');
+        const countryMenu = document.getElementById('countryDropdownMenu');
+        const countrySearch = document.getElementById('countrySearch');
+        const countryListEl = document.getElementById('countryList');
+
+        function populateCountryList(filterText = "") {
+            countryListEl.innerHTML = "";
+            const filtered = countryListArray.filter(c => c.toLowerCase().includes(filterText.toLowerCase()));
+            if(filtered.length === 0) {
+                countryListEl.innerHTML = `<li class="px-3 py-2 text-slate-500 text-center text-xs">No results found</li>`;
+                return;
+            }
+            filtered.forEach(c => {
+                const li = document.createElement('li');
+                li.className = "px-3 py-2 hover:bg-slate-700 cursor-pointer transition border-b border-slate-700/50 last:border-0";
+                li.innerText = c;
+                li.onclick = () => {
+                    selectedCountry = c;
+                    document.getElementById('countrySelectedText').innerText = c;
+                    document.getElementById('countrySelectedText').classList.replace('text-slate-400', 'text-white');
+                    countryMenu.classList.add('hidden');
+                    checkLiveValidation();
+                };
+                countryListEl.appendChild(li);
+            });
+        }
+        
+        countryBtn.addEventListener('click', () => {
+            countryMenu.classList.toggle('hidden');
+            if(!countryMenu.classList.contains('hidden')) {
+                countrySearch.focus();
+                populateCountryList(countrySearch.value);
+            }
+        });
+        countrySearch.addEventListener('input', (e) => populateCountryList(e.target.value));
+        
+        document.addEventListener('click', (e) => {
+            if (!countryBtn.contains(e.target) && !countryMenu.contains(e.target)) {
+                countryMenu.classList.add('hidden');
+            }
+        });
+
+        // ---------------- 5x5 Puzzle Grid Logic ----------------
+        let genPuzzleState = Array(25).fill(0);
+        let verifyPuzzleState = Array(25).fill(0);
+
+        function renderPuzzleGrid(containerId, stateArray, triggerValidation = false) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for(let i=0; i<25; i++) {
+                const cell = document.createElement('div');
+                cell.className = "w-10 h-10 md:w-12 md:h-12 rounded bg-slate-800 border border-slate-600 cursor-pointer transition-all duration-200";
+                
+                // Set initial visual state if reopening
+                if(stateArray[i] === 1) {
+                    cell.classList.remove('bg-slate-800', 'border-slate-600');
+                    cell.classList.add('bg-blue-600', 'border-blue-400', 'shadow-[0_0_12px_rgba(37,99,235,0.8)]', 'scale-105');
+                }
+
+                cell.onclick = () => {
+                    stateArray[i] = stateArray[i] === 0 ? 1 : 0;
+                    if(stateArray[i] === 1) {
+                        cell.classList.remove('bg-slate-800', 'border-slate-600');
+                        cell.classList.add('bg-blue-600', 'border-blue-400', 'shadow-[0_0_12px_rgba(37,99,235,0.8)]', 'scale-105');
+                    } else {
+                        cell.classList.add('bg-slate-800', 'border-slate-600');
+                        cell.classList.remove('bg-blue-600', 'border-blue-400', 'shadow-[0_0_12px_rgba(37,99,235,0.8)]', 'scale-105');
+                    }
+                    if(triggerValidation) checkLiveValidation();
+                };
+                container.appendChild(cell);
+            }
+        }
+
+        // ---------------- Live Validation Logic ----------------
+        const genName = document.getElementById('genName');
+        const genEmail = document.getElementById('genEmail');
+        const nameError = document.getElementById('nameErrorMsg');
+        const emailError = document.getElementById('emailErrorMsg');
+        const puzzleError = document.getElementById('puzzleErrorMsg');
+        const submitBtn = document.getElementById('genSubmitBtn');
+
+        const nameRegex = /^[A-Za-z\s]+$/;
+        const emailRegex = /^[^\s@]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com|icloud\.com)$/i;
+
+        function checkLiveValidation() {
+            const t = i18n[lang];
+            let isValid = true;
+
+            // Name check
+            const nameVal = genName.value.trim();
+            if (nameVal !== "" && !nameRegex.test(nameVal)) {
+                nameError.innerHTML = t.invalidName;
+                nameError.classList.remove('hidden');
+                isValid = false;
+            } else {
+                nameError.classList.add('hidden');
+                if(nameVal === "") isValid = false;
+            }
+
+            // Email check
+            const emailVal = genEmail.value.trim();
+            if (emailVal !== "" && !emailRegex.test(emailVal)) {
+                emailError.innerHTML = t.invalidEmail;
+                emailError.classList.remove('hidden');
+                isValid = false;
+            } else {
+                emailError.classList.add('hidden');
+                if(emailVal === "") isValid = false;
+            }
+
+            // Country check
+            if(!selectedCountry) isValid = false;
+
+            // Puzzle check
+            if(!genPuzzleState.includes(1)) {
+                puzzleError.innerHTML = t.puzzleEmpty;
+                puzzleError.classList.remove('hidden');
+                isValid = false;
+            } else {
+                puzzleError.classList.add('hidden');
+            }
+
+            // Enable/Disable button
+            if(isValid) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        genName.addEventListener('input', checkLiveValidation);
+        genEmail.addEventListener('input', checkLiveValidation);
+
         // ---------------- Generating New Key ----------------
         const genKeyModal = document.getElementById('genKeyModal');
         document.getElementById('genKeyBtn').addEventListener('click', () => {
             document.getElementById('genStatusMsg').innerHTML = '';
+            genName.value = ''; genEmail.value = '';
+            selectedCountry = '';
+            document.getElementById('countrySelectedText').innerText = i18n[lang].countryPh;
+            document.getElementById('countrySelectedText').classList.replace('text-white', 'text-slate-400');
+            genPuzzleState.fill(0);
+            renderPuzzleGrid('genPuzzleGrid', genPuzzleState, true);
+            checkLiveValidation();
             genKeyModal.classList.remove('hidden');
         });
         document.getElementById('genCancelBtn').addEventListener('click', () => genKeyModal.classList.add('hidden'));
 
         document.getElementById('genSubmitBtn').addEventListener('click', async () => {
             const t = i18n[lang];
-            const name = document.getElementById('genName').value.trim();
-            const email = document.getElementById('genEmail').value.trim();
-            const country = document.getElementById('genCountry').value.trim();
-            const puzzle = document.getElementById('genPuzzle').value.trim();
+            const name = genName.value.trim();
+            const email = genEmail.value.trim();
+            const country = selectedCountry;
+            const puzzleString = genPuzzleState.join(''); // e.g. "00101110..."
             const statusEl = document.getElementById('genStatusMsg');
             
-            // Validate all inputs are present
-            if (!name || !email || !country || !puzzle) { 
-                statusEl.className = 'flex items-center text-red-400 text-xs mt-3'; 
-                statusEl.innerHTML = t.genMissing; 
-                return; 
-            }
-
-            // Regex for Letters Only in Name
-            const nameRegex = /^[A-Za-z\s]+$/;
-            if (!nameRegex.test(name)) {
-                statusEl.className = 'flex items-center text-red-400 text-xs mt-3'; 
-                statusEl.innerHTML = t.invalidName; 
-                return; 
-            }
-
-            // Regex for Supported Emails (Gmail, Outlook, Hotmail, Yahoo, iCloud)
-            const emailRegex = /^[^\s@]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com|icloud\.com)$/i;
-            if (!emailRegex.test(email)) {
-                statusEl.className = 'flex items-center text-red-400 text-xs mt-3'; 
-                statusEl.innerHTML = t.invalidEmail; 
-                return; 
-            }
+            // Fallback checking
+            if (!nameRegex.test(name) || !emailRegex.test(email) || !country || !genPuzzleState.includes(1)) return;
             
-            statusEl.className = 'flex items-center text-slate-400 text-xs mt-3'; 
+            statusEl.className = 'flex items-center text-slate-400 text-xs mt-3 justify-center'; 
             statusEl.innerHTML = t.genWorking;
             
             try {
                 const rawKey = crypto.randomUUID() + 'x' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
                 const keyHash = await sha256Hex(rawKey);
-                const hashedPuzzle = await sha256Hex(puzzle);
+                const hashedPuzzle = await sha256Hex(puzzleString);
                 const nowIso = new Date().toISOString();
 
                 const { data: keyRow, error: keyErr } = await sb.from('marvel_tracker_keys')
@@ -563,7 +738,6 @@
 
                 await sb.from('marvel_tracker_devices').insert({ key_id: keyRow.id, device_id: deviceId, device_label: deviceLabel, approved: true });
                 
-                // Embed hashed puzzle safely in the syncing state object
                 savedState['__security_puzzle_hash'] = hashedPuzzle;
                 await sb.from('marvel_tracker_state').upsert({ key_id: keyRow.id, state: savedState, updated_at: nowIso });
 
@@ -577,14 +751,14 @@
                 a.download = 'marvel-sync-key.json';
                 document.body.appendChild(a); a.click(); a.remove();
 
-                statusEl.className = 'flex items-center text-emerald-400 text-xs mt-3'; 
+                statusEl.className = 'flex items-center text-emerald-400 text-xs mt-3 justify-center'; 
                 statusEl.innerHTML = t.genDone;
                 updateSyncStatusUI();
                 startPolling();
                 setTimeout(() => genKeyModal.classList.add('hidden'), 1800);
             } catch (e) {
                 console.error(e);
-                statusEl.className = 'flex items-center text-red-400 text-xs mt-3'; 
+                statusEl.className = 'flex items-center text-red-400 text-xs mt-3 justify-center'; 
                 statusEl.innerHTML = t.genError;
             }
         });
@@ -636,14 +810,13 @@
         const devModal = document.getElementById('deviceManagerModal');
         const devListContainer = document.getElementById('deviceListContainer');
         const puzzlePromptModal = document.getElementById('puzzlePromptModal');
-        const puzzleInput = document.getElementById('puzzleInput');
-        const puzzleErrorMsg = document.getElementById('puzzleErrorMsg');
+        const puzzleErrorMsg = document.getElementById('verifyPuzzleErrorMsg');
 
         document.getElementById('manageDevBtn').addEventListener('click', async () => {
-            puzzleInput.value = '';
             puzzleErrorMsg.classList.add('hidden');
+            verifyPuzzleState.fill(0);
+            renderPuzzleGrid('verifyPuzzleGrid', verifyPuzzleState, false);
             
-            // Backwards compatibility: If this key was generated before the puzzle update, let them in.
             if (!savedState['__security_puzzle_hash']) {
                 devModal.classList.remove('hidden');
                 await loadDevices();
@@ -655,21 +828,22 @@
         document.getElementById('closePuzzleModal').addEventListener('click', () => puzzlePromptModal.classList.add('hidden'));
         document.getElementById('closeDeviceModal').addEventListener('click', () => devModal.classList.add('hidden'));
 
-        document.getElementById('puzzleSubmitBtn').addEventListener('click', async () => {
+        document.getElementById('verifyPuzzleSubmitBtn').addEventListener('click', async () => {
             const t = i18n[lang];
-            const enteredPuzzle = puzzleInput.value.trim();
-            if(!enteredPuzzle) return;
+            const enteredPuzzleString = verifyPuzzleState.join('');
+            if(!verifyPuzzleState.includes(1)) return;
 
-            const hashedEntered = await sha256Hex(enteredPuzzle);
+            const hashedEntered = await sha256Hex(enteredPuzzleString);
             
-            // Verify hash against the one securely stored in the sync state
             if (savedState['__security_puzzle_hash'] === hashedEntered) {
                 puzzlePromptModal.classList.add('hidden');
                 devModal.classList.remove('hidden');
                 await loadDevices();
             } else {
-                puzzleErrorMsg.innerText = t.invalidPuzzle;
+                puzzleErrorMsg.innerHTML = t.invalidPuzzle;
                 puzzleErrorMsg.classList.remove('hidden');
+                verifyPuzzleState.fill(0);
+                renderPuzzleGrid('verifyPuzzleGrid', verifyPuzzleState, false); // Reset visually
             }
         });
 
@@ -706,7 +880,7 @@
 
         window.removeDevice = async (dbId) => {
             await sb.from('marvel_tracker_devices').delete().eq('id', dbId);
-            await loadDevices(); // refresh list
+            await loadDevices(); 
         };
 
         // ---------------- State Sync & Polling ----------------
@@ -741,7 +915,6 @@
             if (!info) return;
             const t = i18n[lang];
 
-            // If we are waiting for approval
             if (info.pending) {
                 const { data } = await sb.from('marvel_tracker_devices').select('*').eq('key_id', info.keyId).eq('device_id', deviceId).maybeSingle();
                 if (data && data.approved) {
@@ -752,10 +925,8 @@
                     return;
                 }
             } else {
-                // Check if our device was removed (Kicked out)
                 const { data: myDevice } = await sb.from('marvel_tracker_devices').select('*').eq('key_id', info.keyId).eq('device_id', deviceId).maybeSingle();
                 if (!myDevice) {
-                    // We got kicked out! Clean local sync info.
                     localStorage.removeItem('marvel_sync_info');
                     alert("You have been logged out from another device.");
                     location.reload();
@@ -776,7 +947,7 @@
                         document.getElementById('approveBtn').onclick = async () => {
                             await sb.from('marvel_tracker_devices').update({ approved: true }).eq('id', pendingOther.id);
                             banner.classList.add('hidden');
-                            await loadDevices(); // Update list if modal is open
+                            await loadDevices(); 
                         };
                         document.getElementById('denyBtn').onclick = async () => {
                             await sb.from('marvel_tracker_devices').delete().eq('id', pendingOther.id);
