@@ -23,7 +23,7 @@
         .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0f172a; border-top: 1px solid #334155; z-index: 40; }
         .sync-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         
-        /* Custom Scrollbar */
+        /* Custom Scrollbar for Country List */
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: #0f172a; border-radius: 8px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 8px; }
@@ -74,9 +74,10 @@
                 <span id="syncStatusText"></span>
             </div>
             <div class="flex gap-2">
-                <button id="manageDevBtn" class="hidden items-center px-3 py-2 md:px-4 md:py-2 bg-blue-900 hover:bg-blue-800 border border-blue-700 rounded-lg text-xs md:text-sm font-bold text-white"></button>
-                <button id="genKeyBtn" class="flex items-center px-3 py-2 md:px-4 md:py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs md:text-sm font-bold"></button>
-                <button id="syncBtn" class="flex items-center px-3 py-2 md:px-4 md:py-2 bg-red-700 hover:bg-red-600 rounded-lg text-xs md:text-sm font-bold"></button>
+                <button id="manageDevBtn" class="hidden items-center px-3 py-2 md:px-4 md:py-2 bg-blue-900 hover:bg-blue-800 border border-blue-700 rounded-lg text-xs md:text-sm font-bold text-white transition"></button>
+                <button id="genKeyBtn" class="flex items-center px-3 py-2 md:px-4 md:py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs md:text-sm font-bold transition"></button>
+                <button id="regenKeyBtn" class="hidden items-center px-3 py-2 md:px-4 md:py-2 bg-amber-700 hover:bg-amber-600 rounded-lg text-xs md:text-sm font-bold text-white transition"></button>
+                <button id="syncBtn" class="flex items-center px-3 py-2 md:px-4 md:py-2 bg-red-700 hover:bg-red-600 rounded-lg text-xs md:text-sm font-bold transition"></button>
                 <input type="file" id="keyFileInput" accept=".json" class="hidden">
             </div>
         </div>
@@ -153,12 +154,7 @@
             </button>
             <h3 id="devModalTitle" class="text-xl font-bold text-white mb-1"></h3>
             <p id="devModalDesc" class="text-slate-400 text-sm mb-4"></p>
-            <div id="deviceListContainer" class="flex-1 overflow-y-auto custom-scroll space-y-3 pr-2 mb-4"></div>
-            
-            <div class="border-t border-slate-700 pt-4 mt-auto">
-                <p id="rotateKeyDesc" class="text-xs text-slate-400 mb-2"></p>
-                <button id="rotateKeyBtn" class="w-full px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-lg font-bold text-sm text-amber-950 flex justify-center items-center gap-2 transition"></button>
-            </div>
+            <div id="deviceListContainer" class="flex-1 overflow-y-auto custom-scroll space-y-3 pr-2 mb-2"></div>
         </div>
     </div>
 
@@ -221,9 +217,8 @@
                 devModalDesc: "আপনি এখন Owner। যেকোনো সন্দেহজনক বা পুরোনো ডিভাইস কিক আউট (Kick out) করে দিন।",
                 thisDevice: "এই ডিভাইস",
                 kickBtn: "কিক আউট",
-                rotateKeyDesc: "আপনার ফাইল অন্য কেউ পেয়ে গেলে, নতুন Master Key বানিয়ে আগের ফাইলটি চিরতরে বাতিল করুন।",
-                rotateKeyBtn: `${icons.key} নতুন Master Key জেনারেট করুন`,
                 genKeyBtn: `${icons.key} কী জেনারেট করুন`,
+                regenKeyBtn: `${icons.key} রি-জেনারেট কী`,
                 syncBtn: `${icons.sync} সিঙ্ক করুন`,
                 syncedText: (n)=>`সিঙ্কড (${n} ডিভাইস)`,
                 notSyncedText: "সিঙ্ক করা নেই: লোকাল ব্রাউজারে সেভ হচ্ছে",
@@ -269,9 +264,8 @@
                 devModalDesc: "You are now Owner. Kick out any suspicious or old devices from your sync network.",
                 thisDevice: "This Device",
                 kickBtn: "Kick out",
-                rotateKeyDesc: "If someone has your file, generate a new Master Key to invalidate the old file permanently.",
-                rotateKeyBtn: `${icons.key} Generate New Master Key`,
                 genKeyBtn: `${icons.key} Generate Key`,
+                regenKeyBtn: `${icons.key} Regenerate Key`,
                 syncBtn: `${icons.sync} Sync`,
                 syncedText: (n)=>`Synced (${n} devices)`,
                 notSyncedText: "Not synced: saving to this browser only",
@@ -515,10 +509,9 @@
             document.getElementById('manageDevBtn').innerHTML = t.manageDevBtn;
             document.getElementById('devModalTitle').innerText = t.devModalTitle;
             document.getElementById('devModalDesc').innerText = t.devModalDesc;
-            document.getElementById('rotateKeyDesc').innerText = t.rotateKeyDesc;
-            document.getElementById('rotateKeyBtn').innerHTML = t.rotateKeyBtn;
 
             document.getElementById('genKeyBtn').innerHTML = t.genKeyBtn;
+            document.getElementById('regenKeyBtn').innerHTML = t.regenKeyBtn;
             document.getElementById('syncBtn').innerHTML = t.syncBtn;
             document.getElementById('genOnceWarning').innerHTML = t.genOnceWarning;
             document.getElementById('approveBtn').innerHTML = t.approveBtn;
@@ -558,17 +551,21 @@
             const dot = document.getElementById('syncDot');
             const text = document.getElementById('syncStatusText');
             const manageBtn = document.getElementById('manageDevBtn');
+            const genBtn = document.getElementById('genKeyBtn');
+            const regenBtn = document.getElementById('regenKeyBtn');
 
             if (info && !info.pending) {
                 dot.className = 'sync-dot bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]';
                 text.innerText = t.syncedText(deviceCountCache);
-                manageBtn.classList.remove('hidden');
-                manageBtn.classList.add('flex');
+                manageBtn.classList.remove('hidden'); manageBtn.classList.add('flex');
+                genBtn.classList.add('hidden'); genBtn.classList.remove('flex');
+                regenBtn.classList.remove('hidden'); regenBtn.classList.add('flex');
             } else {
                 dot.className = 'sync-dot bg-slate-500';
                 text.innerText = t.notSyncedText;
-                manageBtn.classList.add('hidden');
-                manageBtn.classList.remove('flex');
+                manageBtn.classList.add('hidden'); manageBtn.classList.remove('flex');
+                genBtn.classList.remove('hidden'); genBtn.classList.add('flex');
+                regenBtn.classList.add('hidden'); regenBtn.classList.remove('flex');
             }
         }
 
@@ -702,7 +699,7 @@
         genName.addEventListener('input', checkLiveValidation);
         genEmail.addEventListener('input', checkLiveValidation);
 
-        // ---------------- Generating New Key ----------------
+        // ---------------- Generating Initial Key (Un-synced) ----------------
         const genKeyModal = document.getElementById('genKeyModal');
         document.getElementById('genKeyBtn').addEventListener('click', () => {
             document.getElementById('genStatusMsg').innerHTML = '';
@@ -764,6 +761,47 @@
                 console.error(e);
                 statusEl.className = 'flex items-center text-red-400 text-xs mt-3 justify-center'; 
                 statusEl.innerHTML = t.genError;
+            }
+        });
+
+        // ---------------- Regenerate Key (For Synced Users) ----------------
+        document.getElementById('regenKeyBtn').addEventListener('click', async () => {
+            const info = getSyncInfo();
+            if (!info) return;
+            const t = i18n[lang];
+            
+            const btn = document.getElementById('regenKeyBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `${icons.sync} ${t.genWorking}`;
+            
+            try {
+                const rawKey = crypto.randomUUID() + 'R' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
+                const keyHash = await sha256Hex(rawKey);
+                
+                await sb.from('marvel_tracker_keys').update({ key_hash: keyHash }).eq('id', info.keyId);
+                setSyncInfo({ keyId: info.keyId, keyHash: keyHash });
+                
+                const { data: keyData } = await sb.from('marvel_tracker_keys').select('name, email, country').eq('id', info.keyId).single();
+                
+                const payload = { 
+                    key: rawKey, 
+                    name: keyData?.name || 'Regenerated User', 
+                    email: keyData?.email || '', 
+                    country: keyData?.country || '', 
+                    created_at: new Date().toISOString() 
+                };
+                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'marvel-regenerated-key.json';
+                document.body.appendChild(a); a.click(); a.remove();
+
+                btn.innerHTML = `${icons.check} Success!`;
+                setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+            } catch(e) {
+                console.error(e);
+                btn.innerHTML = `${icons.cross} Error`;
+                setTimeout(() => { btn.innerHTML = originalText; }, 2000);
             }
         });
 
@@ -886,49 +924,6 @@
             await sb.from('marvel_tracker_devices').delete().eq('id', dbId);
             await loadDevices(); 
         };
-        
-        document.getElementById('rotateKeyBtn').addEventListener('click', async () => {
-            const info = getSyncInfo();
-            if (!info) return;
-            const t = i18n[lang];
-            
-            const btn = document.getElementById('rotateKeyBtn');
-            btn.innerHTML = `${icons.sync} ${t.genWorking}`;
-            
-            try {
-                const rawKey = crypto.randomUUID() + 'R' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
-                const keyHash = await sha256Hex(rawKey);
-                
-                await sb.from('marvel_tracker_keys').update({ key_hash: keyHash }).eq('id', info.keyId);
-                
-                setSyncInfo({ keyId: info.keyId, keyHash: keyHash });
-                
-                const { data: keyData } = await sb.from('marvel_tracker_keys').select('name, email, country').eq('id', info.keyId).single();
-                
-                const payload = { 
-                    key: rawKey, 
-                    name: keyData?.name || 'Rotated User', 
-                    email: keyData?.email || '', 
-                    country: keyData?.country || '', 
-                    created_at: new Date().toISOString() 
-                };
-                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = 'marvel-rotated-key.json';
-                document.body.appendChild(a); a.click(); a.remove();
-
-                btn.innerHTML = `${icons.check} Success!`;
-                setTimeout(() => {
-                    btn.innerHTML = t.rotateKeyBtn;
-                    devModal.classList.add('hidden');
-                }, 2000);
-
-            } catch(e) {
-                console.error(e);
-                btn.innerHTML = `${icons.cross} Error`;
-            }
-        });
 
         // ---------------- State Sync & Polling ----------------
         async function pullAndMergeState(keyId) {
