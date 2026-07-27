@@ -28,7 +28,10 @@
 
     <div class="max-w-5xl mx-auto bg-slate-900 p-6 md:p-10 rounded-2xl border border-slate-700 shadow-2xl">
         <div class="flex justify-end mb-2">
-            <button id="langToggle" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:bg-slate-700 transition">EN / বাং</button>
+            <button id="langToggle" class="flex items-center text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:bg-slate-700 transition">
+                <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
+                EN / বাং
+            </button>
         </div>
         <div class="text-center mb-10">
             <h1 id="pageTitle" class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-blue-500 mb-4 uppercase tracking-wider"></h1>
@@ -49,10 +52,10 @@
 
         <!-- Pending device-approval banner -->
         <div id="approvalBanner" class="hidden mb-6 bg-amber-900/40 border border-amber-600 p-4 rounded-xl">
-            <p id="approvalText" class="text-amber-200 text-sm mb-3"></p>
+            <p id="approvalText" class="text-amber-200 text-sm mb-3 flex items-center"></p>
             <div class="flex gap-3">
-                <button id="approveBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-sm font-bold"></button>
-                <button id="denyBtn" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-bold"></button>
+                <button id="approveBtn" class="flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-sm font-bold"></button>
+                <button id="denyBtn" class="flex items-center px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-bold"></button>
             </div>
         </div>
 
@@ -67,8 +70,8 @@
                 <span id="syncStatusText"></span>
             </div>
             <div class="flex gap-2">
-                <button id="genKeyBtn" class="px-3 py-2 md:px-4 md:py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs md:text-sm font-bold"></button>
-                <button id="syncBtn" class="px-3 py-2 md:px-4 md:py-2 bg-red-700 hover:bg-red-600 rounded-lg text-xs md:text-sm font-bold"></button>
+                <button id="genKeyBtn" class="flex items-center px-3 py-2 md:px-4 md:py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs md:text-sm font-bold"></button>
+                <button id="syncBtn" class="flex items-center px-3 py-2 md:px-4 md:py-2 bg-red-700 hover:bg-red-600 rounded-lg text-xs md:text-sm font-bold"></button>
                 <input type="file" id="keyFileInput" accept=".json" class="hidden">
             </div>
         </div>
@@ -80,16 +83,16 @@
             <h3 id="genModalTitle" class="text-xl font-bold text-white mb-1"></h3>
             <p id="genModalDesc" class="text-slate-400 text-sm mb-4"></p>
             <div class="space-y-3">
-                <input id="genName" type="text" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm">
-                <input id="genEmail" type="email" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm">
-                <input id="genCountry" type="text" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm">
+                <input id="genName" type="text" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                <input id="genEmail" type="email" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
+                <input id="genCountry" type="text" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500">
             </div>
-            <p id="genOnceWarning" class="text-amber-400 text-xs mt-3"></p>
+            <p id="genOnceWarning" class="flex items-start text-amber-400 text-xs mt-3"></p>
             <div class="flex gap-3 mt-5">
-                <button id="genSubmitBtn" class="flex-1 px-4 py-2 bg-red-700 hover:bg-red-600 rounded-lg font-bold text-sm"></button>
-                <button id="genCancelBtn" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold text-sm"></button>
+                <button id="genSubmitBtn" class="flex-1 px-4 py-2 bg-red-700 hover:bg-red-600 rounded-lg font-bold text-sm text-white"></button>
+                <button id="genCancelBtn" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold text-sm text-white"></button>
             </div>
-            <p id="genStatusMsg" class="text-xs mt-3"></p>
+            <p id="genStatusMsg" class="flex items-center text-xs mt-3"></p>
         </div>
     </div>
 
@@ -100,6 +103,16 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzbmRmZmhyamJzandqb2h5cmV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3OTk4NjUsImV4cCI6MjA5NjM3NTg2NX0.sdvw05kdbVGukuT4twFirXfGx9RLcpWQ_GxR8KXa1oc';
         const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // ---------------- SVGs ----------------
+        const icons = {
+            key: `<svg class="w-4 h-4 inline-block mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>`,
+            sync: `<svg class="w-4 h-4 inline-block mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>`,
+            check: `<svg class="w-4 h-4 inline-block mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`,
+            cross: `<svg class="w-4 h-4 inline-block mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`,
+            warning: `<svg class="w-4 h-4 inline-block mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`,
+            info: `<svg class="w-4 h-4 inline-block mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
+        };
+
         // ---------------- i18n ----------------
         const i18n = {
             bn: {
@@ -109,26 +122,26 @@
                 progressLabel: "মিশন প্রোগ্রেস",
                 upcoming: "আপকামিং",
                 badges: { mcu:"MCU", mcutv:"MCU সিরিজ", sony:"SONY", sonyanim:"SONY অ্যানিমেটেড", fox:"FOX", netflix:"NETFLIX", other:"অন্যান্য" },
-                genKeyBtn: "🔑 কী জেনারেট করুন",
-                syncBtn: "🔄 সিঙ্ক করুন",
+                genKeyBtn: `${icons.key} কী জেনারেট করুন`,
+                syncBtn: `${icons.sync} সিঙ্ক করুন`,
                 syncedText: (n)=>`সিঙ্কড (${n} ডিভাইস)`,
                 notSyncedText: "সিঙ্ক করা নেই — লোকাল ব্রাউজারে সেভ হচ্ছে",
                 genModalTitle: "নতুন সিঙ্ক-কী তৈরি করুন",
                 genModalDesc: "নাম, ইমেইল ও দেশ দিন। এই তথ্য দিয়ে একটি ইউনিক কী তৈরি হবে, যেটা key.json ফাইল হিসেবে মাত্র একবার ডাউনলোড করা যাবে — হারালে আবার নতুন কী জেনারেট করতে হবে।",
                 namePh: "আপনার নাম", emailPh: "ইমেইল", countryPh: "দেশ",
-                genOnceWarning: "⚠️ কী শুধু একবারই ডাউনলোড হবে। ফাইলটা নিরাপদ জায়গায় সংরক্ষণ করুন — এটা দিয়েই অন্য ডিভাইসে সিঙ্ক করবেন।",
+                genOnceWarning: `${icons.warning} <span>কী শুধু একবারই ডাউনলোড হবে। ফাইলটা নিরাপদ জায়গায় সংরক্ষণ করুন — এটা দিয়েই অন্য ডিভাইসে সিঙ্ক করবেন।</span>`,
                 genSubmit: "জেনারেট ও ডাউনলোড করুন",
                 genCancel: "বাতিল",
-                genMissing: "নাম, ইমেইল ও দেশ — সবগুলো পূরণ করুন।",
-                genWorking: "কী তৈরি হচ্ছে...",
-                genDone: "✅ কী তৈরি হয়ে গেছে এবং ডাউনলোড হয়েছে!",
-                genError: "কী তৈরি করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।",
+                genMissing: `${icons.warning} নাম, ইমেইল ও দেশ — সবগুলো পূরণ করুন।`,
+                genWorking: `${icons.sync} কী তৈরি হচ্ছে...`,
+                genDone: `${icons.check} কী তৈরি হয়ে গেছে এবং ডাউনলোড হয়েছে!`,
+                genError: `${icons.cross} কী তৈরি করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।`,
                 syncInvalidKey: "এই কী-টা ভ্যালিড না। ফাইলটা ঠিক আছে কি না চেক করুন।",
                 syncWaitingApproval: "আরেকটা ডিভাইসে অনুমোদনের অপেক্ষায় আছে — সেই ডিভাইসে ব্রাউজার খুলে 'অনুমোদন করুন' চাপুন।",
-                syncApprovedNow: "✅ ডিভাইস অনুমোদিত হয়েছে, সিঙ্ক হয়ে গেছে!",
-                approvalBannerText: (label)=>`একটা নতুন ডিভাইস (${label}) আপনার কী দিয়ে সিঙ্ক করতে চাইছে। এটা কি আপনি?`,
-                approveBtn: "✅ অনুমোদন করুন",
-                denyBtn: "❌ প্রত্যাখ্যান"
+                syncApprovedNow: "ডিভাইস অনুমোদিত হয়েছে, সিঙ্ক হয়ে গেছে!",
+                approvalBannerText: (label)=>`${icons.info} <span>একটা নতুন ডিভাইস (${label}) আপনার কী দিয়ে সিঙ্ক করতে চাইছে। এটা কি আপনি?</span>`,
+                approveBtn: `${icons.check} অনুমোদন করুন`,
+                denyBtn: `${icons.cross} প্রত্যাখ্যান`
             },
             en: {
                 title: "Marvel Chronological Watchlist",
@@ -137,26 +150,26 @@
                 progressLabel: "Mission Progress",
                 upcoming: "Upcoming",
                 badges: { mcu:"MCU", mcutv:"MCU SERIES", sony:"SONY", sonyanim:"SONY ANIMATED", fox:"FOX", netflix:"NETFLIX", other:"OTHER" },
-                genKeyBtn: "🔑 Generate Key",
-                syncBtn: "🔄 Sync",
+                genKeyBtn: `${icons.key} Generate Key`,
+                syncBtn: `${icons.sync} Sync`,
                 syncedText: (n)=>`Synced (${n} devices)`,
                 notSyncedText: "Not synced — saving to this browser only",
                 genModalTitle: "Create a new sync key",
                 genModalDesc: "Enter your name, email and country. We'll generate a unique key you can download as a key.json file — only once. If you lose it, you'll need to generate a new one.",
                 namePh: "Your name", emailPh: "Email", countryPh: "Country",
-                genOnceWarning: "⚠️ The key can only be downloaded once. Keep the file safe — you'll use it to sync your other devices.",
+                genOnceWarning: `${icons.warning} <span>The key can only be downloaded once. Keep the file safe — you'll use it to sync your other devices.</span>`,
                 genSubmit: "Generate & Download",
                 genCancel: "Cancel",
-                genMissing: "Please fill in name, email and country.",
-                genWorking: "Generating key...",
-                genDone: "✅ Key created and downloaded!",
-                genError: "Something went wrong generating the key. Please try again.",
+                genMissing: `${icons.warning} Please fill in name, email and country.`,
+                genWorking: `${icons.sync} Generating key...`,
+                genDone: `${icons.check} Key created and downloaded!`,
+                genError: `${icons.cross} Something went wrong generating the key. Please try again.`,
                 syncInvalidKey: "That key isn't valid. Double check the file.",
                 syncWaitingApproval: "Waiting for approval on another device — open the app there and tap 'Approve'.",
-                syncApprovedNow: "✅ Device approved and synced!",
-                approvalBannerText: (label)=>`A new device (${label}) is trying to sync using your key. Is this you?`,
-                approveBtn: "✅ Approve",
-                denyBtn: "❌ Deny"
+                syncApprovedNow: "Device approved and synced!",
+                approvalBannerText: (label)=>`${icons.info} <span>A new device (${label}) is trying to sync using your key. Is this you?</span>`,
+                approveBtn: `${icons.check} Approve`,
+                denyBtn: `${icons.cross} Deny`
             }
         };
         let lang = localStorage.getItem('marvel_lang') || 'bn';
@@ -376,18 +389,22 @@
             document.getElementById('pageSubtitle').innerText = t.subtitle;
             document.getElementById('pageTodayNote').innerText = t.todayNote;
             document.getElementById('progressLabel').innerText = t.progressLabel;
-            document.getElementById('genKeyBtn').innerText = t.genKeyBtn;
-            document.getElementById('syncBtn').innerText = t.syncBtn;
+            
+            // Elements that parse icons use innerHTML
+            document.getElementById('genKeyBtn').innerHTML = t.genKeyBtn;
+            document.getElementById('syncBtn').innerHTML = t.syncBtn;
+            document.getElementById('genOnceWarning').innerHTML = t.genOnceWarning;
+            document.getElementById('approveBtn').innerHTML = t.approveBtn;
+            document.getElementById('denyBtn').innerHTML = t.denyBtn;
+            
             document.getElementById('genModalTitle').innerText = t.genModalTitle;
             document.getElementById('genModalDesc').innerText = t.genModalDesc;
             document.getElementById('genName').placeholder = t.namePh;
             document.getElementById('genEmail').placeholder = t.emailPh;
             document.getElementById('genCountry').placeholder = t.countryPh;
-            document.getElementById('genOnceWarning').innerText = t.genOnceWarning;
             document.getElementById('genSubmitBtn').innerText = t.genSubmit;
             document.getElementById('genCancelBtn').innerText = t.genCancel;
-            document.getElementById('approveBtn').innerText = t.approveBtn;
-            document.getElementById('denyBtn').innerText = t.denyBtn;
+            
             renderLegend();
             updateSyncStatusUI();
         }
@@ -418,7 +435,7 @@
         // ---------------- Generate Key ----------------
         const genKeyModal = document.getElementById('genKeyModal');
         document.getElementById('genKeyBtn').addEventListener('click', () => {
-            document.getElementById('genStatusMsg').innerText = '';
+            document.getElementById('genStatusMsg').innerHTML = '';
             genKeyModal.classList.remove('hidden');
         });
         document.getElementById('genCancelBtn').addEventListener('click', () => genKeyModal.classList.add('hidden'));
@@ -429,8 +446,16 @@
             const email = document.getElementById('genEmail').value.trim();
             const country = document.getElementById('genCountry').value.trim();
             const statusEl = document.getElementById('genStatusMsg');
-            if (!name || !email || !country) { statusEl.className = 'text-red-400 text-xs mt-3'; statusEl.innerText = t.genMissing; return; }
-            statusEl.className = 'text-slate-400 text-xs mt-3'; statusEl.innerText = t.genWorking;
+            
+            if (!name || !email || !country) { 
+                statusEl.className = 'flex items-center text-red-400 text-xs mt-3'; 
+                statusEl.innerHTML = t.genMissing; 
+                return; 
+            }
+            
+            statusEl.className = 'flex items-center text-slate-400 text-xs mt-3'; 
+            statusEl.innerHTML = t.genWorking;
+            
             try {
                 const rawKey = crypto.randomUUID() + '-' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
                 const keyHash = await sha256Hex(rawKey);
@@ -453,13 +478,15 @@
                 a.download = 'marvel-tracker-key.json';
                 document.body.appendChild(a); a.click(); a.remove();
 
-                statusEl.className = 'text-emerald-400 text-xs mt-3'; statusEl.innerText = t.genDone;
+                statusEl.className = 'flex items-center text-emerald-400 text-xs mt-3'; 
+                statusEl.innerHTML = t.genDone;
                 updateSyncStatusUI();
                 startPolling();
                 setTimeout(() => genKeyModal.classList.add('hidden'), 1800);
             } catch (e) {
                 console.error(e);
-                statusEl.className = 'text-red-400 text-xs mt-3'; statusEl.innerText = t.genError;
+                statusEl.className = 'flex items-center text-red-400 text-xs mt-3'; 
+                statusEl.innerHTML = t.genError;
             }
         });
 
@@ -556,7 +583,7 @@
                     const pendingOther = allDevices.find(d => !d.approved && d.device_id !== deviceId);
                     const banner = document.getElementById('approvalBanner');
                     if (pendingOther) {
-                        document.getElementById('approvalText').innerText = t.approvalBannerText(pendingOther.device_label || 'Unknown device');
+                        document.getElementById('approvalText').innerHTML = t.approvalBannerText(pendingOther.device_label || 'Unknown device');
                         banner.classList.remove('hidden');
                         document.getElementById('approveBtn').onclick = async () => {
                             await sb.from('marvel_tracker_devices').update({ approved: true }).eq('id', pendingOther.id);
